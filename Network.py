@@ -5,19 +5,18 @@ class Network:
 	def __init__(self, name='Unnamed Network'):
 		self.name = name
 		self.nodes = []
-		self.links = []  # to be removed
-		self.nodes_dict = {}  # node name -> id in nodes list
-		self.links_dict = {}  # pair (node1_id, node2_id) -> True
-		self.demands = {}  # pair (node1_id, node2_id) ->
-		self.paths_dict = {}  # pair
+		self.nodes_dict = {}    # node name -> id in nodes list
+		self.links_dict = {}    # pair (node1_id, node2_id) -> True
+		self.demands_dict = {}  # pair (node1_id, node2_id) -> demanded value
+		self.paths_dict = {}    # pair (node1_id, node2_id) -> list of paths, each path = a list
+
+	#
+	# NODES
+	#
 
 	def number_of_nodes(self):
 		""" Return  number of nodes. """
 		return len(self.nodes)
-
-	def number_of_links(self):
-		""" Return number of links. """
-		return len(self.links_dict)
 
 	def add_node(self, node):
 		""" Add node and return its id.  """
@@ -26,16 +25,22 @@ class Network:
 		self.nodes_dict[node.name] = node_id
 		return node_id
 
+	def nodes_range(self):
+		""" Return a range with IDs of all nodes. """
+		return range(len(self.nodes))
+
+	#
+	# LINKS
+	#
+
+	def number_of_links(self):
+		""" Return number of links. """
+		return len(self.links_dict)
+
 	def add_link(self, pair):
 		""" Add link between nodes specified as a tuple of IDs. """
 		pair = tuple(pair)
-		self.links.append(pair)
 		self.links_dict[pair] = True
-
-	def add_demand(self, pair, value=0.0):
-		""" Add demand between nodes specified as a tuple of IDs and set its value. """
-		pair = tuple(pair)
-		self.demands[pair] = value
 
 	def are_connected(self, pair):
 		""" Return if there is a link between nodes specified as a tuple of IDs. """
@@ -44,6 +49,24 @@ class Network:
 		conn = (pair in self.links_dict) or (pair_inv in self.links_dict)
 		return conn
 
+	def neighbours_of(self, node_id):
+		""" Return a list of neighbours of a provided node. """
+		n_list = []
+		for id in self.nodes_range():
+			pair = (node_id, id)
+			if self.are_connected(pair):
+				n_list.append(id)
+		return n_list
+
+	#
+	# DEMANDS
+	#
+
+	def add_demand(self, pair, value=0.0):
+		""" Add demand between nodes specified as a tuple of IDs and set its value. """
+		pair = tuple(pair)
+		self.demands_dict[pair] = value
+
 	def demand_of(self, pair):
 		"""
 		Return demanded value between nodes specified as a pair.
@@ -51,12 +74,20 @@ class Network:
 		"""
 		pair = tuple(pair)
 		pair_inv = pair[::-1]
-		if pair in self.demands:
-			return self.demands[pair]
-		elif pair_inv in self.demands:
-			return self.demands[pair_inv]
+		if pair in self.demands_dict:
+			return self.demands_dict[pair]
+		elif pair_inv in self.demands_dict:
+			return self.demands_dict[pair_inv]
 		else:
 			raise Exception("No demand between {} and {}.".format(*pair))
+
+	#
+	# ADMISSIBLE PATHS
+	#
+
+	def number_of_admissible_paths(self):
+		""" Return number of admissible paths. """
+		return len(self.paths_dict)
 
 	def add_admissible_path(self, path):
 		"""
@@ -66,8 +97,8 @@ class Network:
 		pair = (path[0], path[-1])
 		pair_inv = pair[::-1]
 		# verify demand
-		if (pair in self.demands) and (pair_inv not in self.demands):
-			raise Exception('There is no such demand for this admissible path.'.format(node_id))
+		if (pair not in self.demands_dict) and (pair_inv not in self.demands_dict):
+			raise Exception('There is no such demand for this admissible path.')
 
 		# verify nodes
 		for node_id in path:
@@ -80,10 +111,6 @@ class Network:
 				raise Exception('Such path in the network is not possible.')
 
 		self.paths_dict[pair] = path
-
-	def has_admissible_paths(self):
-		""" Return if any admissible path is specified. """
-		return len(self.paths_dict) > 0
 
 	def paths_between(self, pair):
 		"""
@@ -98,22 +125,11 @@ class Network:
 		elif pair_inv in self.paths_dict:
 			return list(list(reversed(path)) for path in self.paths_dict[pair_inv])
 
-		if return_empty:
-			return []
-		else:
-			raise Exception("No path between {} and {}".format(*pair))
+		raise Exception("No path between {} and {}".format(*pair))
 
-	def node_list(self, sequence):
-		""" Exchange a sequence of node IDs into a generator of corresponding node objects. """
-		for node_id in sequence:
-			yield self.nodes[node_id]
-
-	def index_of(self, node):
-		""" Return ID of a provided node. Raise an exception if there's no such node. """
-		for i, network_node in enumerate(self.nodes):
-			if network_node == node:
-				return i
-		raise Exception("Node {} does not belong to the network.".format(node))
+	#
+	# LOADING FROM FILE
+	#
 
 	def load_structure(self, filename):
 		""" Load nodes and links from a specified *.xml file. """
@@ -194,21 +210,21 @@ def example():
 	print(nodes, '\n')
 
 	print('Links in the loaded network:')
-	for link in net.links:
+	for link in net.links_dict:
 		source, target = link
 		print(net.nodes[source].name, '<->', net.nodes[target].name)
 
 	print('\nDemands in the loaded network:')
 
-	for pair, demand in net.demands.items():
+	for pair, demand in net.demands_dict.items():
 		source, target = pair
 		print(net.nodes[source].name, '<->', net.nodes[target].name, '=', demand)
 
-		if net.has_admissible_paths():
+		if net.number_of_admissible_paths() > 0:
 			print('Admissible paths between {} and {}:'.format(net.nodes[source].name, net.nodes[target].name))
 			for path in net.paths_between(source, target):
 				print([net.nodes[x].name for x in path])
-	if net.has_admissible_paths():
+	if net.number_of_admissible_paths() > 0:
 		paths, path_reversed = net.paths_between(0, 1), net.paths_between(1, 0)
 		print(paths)
 		print(path_reversed)
@@ -224,5 +240,9 @@ def example():
 	except Exception as e:
 		print(str(e))
 
-	x = net.add_node(random_node)
-	#net.add_admissible_path([0, 1, 500])
+	# iterate over every demand and print neighbours of demand starting point
+	for pair in net.demands_dict:
+		start, end = pair
+		print("Neighbours of {}".format(net.nodes[start]))
+		for neighbour in net.neighbours_of(start):
+			print(net.nodes[neighbour])

@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import random
 
 
 class Network:
@@ -110,7 +111,15 @@ class Network:
 			if not self.are_connected(path[i:i+2]):
 				raise Exception('Such path in the network is not possible.')
 
-		self.paths_dict[pair] = path
+		if pair not in self.paths_dict:
+			self.paths_dict[pair] = []
+			self.paths_dict[pair].append(path)
+		else:
+			self.paths_dict[pair].append(path)
+
+	def add_admissible_paths(self, paths):
+		for path in paths:
+			self.add_admissible_path(path)
 
 	def paths_between(self, pair):
 		"""
@@ -127,6 +136,24 @@ class Network:
 
 		raise Exception("No path between {} and {}".format(*pair))
 
+	#
+	# ANOTHER USEFUL FUNCS
+	#
+
+	def generate_all_paths_between(self, pair, max_amount_of_paths):
+		paths_created = 0
+		start, end = pair
+		queue = [(start, [start])]
+		while queue:
+			(vertex, path) = queue.pop(0)
+			for next in set(self.neighbours_of(vertex)) - set(path):
+				if next == end:
+					yield path + [next]
+					paths_created += 1
+				else:
+					queue.append((next, path + [next]))
+			if paths_created == max_amount_of_paths:
+				break
 	#
 	# LOADING FROM FILE
 	#
@@ -240,9 +267,30 @@ def example():
 	except Exception as e:
 		print(str(e))
 
-	# iterate over every demand and print neighbours of demand starting point
-	for pair in net.demands_dict:
-		start, end = pair
+	for element in net.nodes_dict:
+		start = net.nodes_dict[element]
 		print("Neighbours of {}".format(net.nodes[start]))
 		for neighbour in net.neighbours_of(start):
 			print(net.nodes[neighbour])
+
+
+def generate_network_with_admissible_paths(max_path_amount, file_path):
+	net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
+	visited = set()
+	for element in net.nodes_dict:
+		el_id = net.nodes_dict[element]
+		visited.add(element)
+		for vertex in set(net.nodes_dict) - visited:
+			v_id = net.nodes_dict[vertex]
+			pair = (el_id, v_id)
+			all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
+			admissible_paths = list()
+			admissible_paths.append(list(all_paths_between[0]))		# always add the shortest path
+			random_paths = random.sample(all_paths_between[1:], 2)
+			for path in random_paths:
+				admissible_paths.append(list(path))
+			net.add_admissible_paths(admissible_paths)
+	return net
+
+
+

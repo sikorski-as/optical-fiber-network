@@ -1,9 +1,8 @@
 import Network
 from Chromosome import ChromosomeCreator
 from Chromosome import ChromosomeUtils
-from Algorithm import OpticalFibersCapacity
-from Algorithm import Parameters
-
+from Parameters import Parameters, OpticalFibersCapacity
+from Algorithm import Algorithm
 
 def example():
 	network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from,
@@ -12,7 +11,7 @@ def example():
 	chromosome_creator = ChromosomeCreator()
 	chromosome_utils = ChromosomeUtils()
 
-	chromosomes = chromosome_creator.generate_chromosomes(network, Parameters.amount_of_chromosomes)
+	chromosomes = chromosome_creator.generate_chromosomes_random(network, Parameters.amount_of_chromosomes)
 
 	for chromosome in chromosomes:
 		print(chromosome_utils.get_network_cost(chromosome, OpticalFibersCapacity.L8))
@@ -28,11 +27,27 @@ def example():
 	print(chromosome_utils.get_network_cost(chr, OpticalFibersCapacity.L8))
 	print(chromosome_utils.get_network_cost(chr2, OpticalFibersCapacity.L8))
 
+def marcin():
+	network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from, 'Resources/net-us.xml')
+	chromosome_creator = ChromosomeCreator()
+	chromosome_utils = ChromosomeUtils()
+	chromosomes = chromosome_creator.generate_chromosomes_mixed(network, Parameters.amount_of_chromosomes, 25)
+	algorithm = Algorithm(chromosomes, network)
+	chromosomes = algorithm.algorithm1()
+	for chromosome in chromosomes:
+		cost = chromosome_utils.get_network_cost(chromosome, Parameters.optical_fiber_capacity)
+		if cost < 5:
+			print(cost)
+			for key in chromosome.paths_demand:
+				for demand in chromosome.paths_demand[key]:
+					print(demand, end = ' ')
+				print()
+
+			print()
 
 def main():
-	example()
+	marcin()
 
 
 if __name__ == '__main__':
 	main()
-

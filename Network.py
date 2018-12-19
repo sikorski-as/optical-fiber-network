@@ -180,7 +180,7 @@ class Network:
 	def load_demands(self, filename, admissible_paths=0):
 		"""
 		Load demands from a specified *.xml file.
-		Loads a specified number of admissible paths for this demand.
+		Loads a specified number of admissible paths for each demand.
 		"""
 		tree = ET.parse(filename)
 		root = tree.getroot()
@@ -195,19 +195,21 @@ class Network:
 			self.add_demand(index, value)
 
 			# get admissible paths
-			if demand_id < admissible_paths:
-				for path in demand.find('admissiblePaths'):
-					links = []
-					for link in path:
-						pair = link.text.split('_')[1:]
-						links.append(tuple(int(x) for x in pair))
-					nodes = [index[0]]
-					for link in links:
-						if link[0] == nodes[-1]:
-							nodes.append(link[1])
-						else:
-							nodes.append(link[0])
-					self.add_admissible_path(nodes)
+			demand_paths = demand.find('admissiblePaths') # this is none if trying to load demands for net-us.xml
+			if admissible_paths > 0 and demand_paths is not None:
+				for i, path in enumerate(demand_paths):
+					if i < admissible_paths:
+						links = []
+						for link in path:
+							pair = link.text.split('_')[1:]
+							links.append(tuple(int(x) for x in pair))
+						nodes = [index[0]]
+						for link in links:
+							if link[0] == nodes[-1]:
+								nodes.append(link[1])
+							else:
+								nodes.append(link[0])
+						self.add_admissible_path(nodes)
 
 	@staticmethod
 	def load_from_file(filename, structure=True, demands=True, admissible_paths=0):

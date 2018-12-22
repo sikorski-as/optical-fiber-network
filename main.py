@@ -31,7 +31,7 @@ def marcin():
 	network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from, 'Resources/net-us.xml')
 	chromosome_creator = ChromosomeCreator()
 	chromosome_utils = ChromosomeUtils()
-	chromosomes = chromosome_creator.generate_chromosomes_mixed(network, Parameters.amount_of_chromosomes, 25)
+	chromosomes = chromosome_creator.generate_chromosomes_all_in_one(network, Parameters.amount_of_chromosomes)
 	algorithm = Algorithm(chromosomes, network)
 	chromosomes = algorithm.algorithm1()
 	for chromosome in chromosomes:

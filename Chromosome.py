@@ -37,6 +37,7 @@ class Chromosome:
 class ChromosomeUtils:
 
     ct = {
+        0:  [0, 0, 0],
         10: [1, 0, 0],
         20: [2, 0, 0],
         30: [0, 1, 0],
@@ -70,10 +71,10 @@ class ChromosomeUtils:
         return cost
 
     def get_transponders_cost(self, demand):
-        transponder100tmp = math.floor(demand / 100)
-        demand -= transponder100tmp * 100
         if demand % 10 != 0:
             demand = demand - (demand % 10) + 10
+        transponder100tmp = math.floor(demand / 100)
+        demand -= transponder100tmp * 100
         transponder10, transponder40, transponder100 = self.ct[demand]
         transponder100 += transponder100tmp
         cost = transponder10 + 3 * transponder40 + 7 * transponder100
@@ -82,9 +83,8 @@ class ChromosomeUtils:
     def get_network_transponders_cost(self, chromosome, optical_fiber_capacity):
         cost = 0
         for key in sorted(chromosome.paths_dict):
-            for demands in chromosome.paths_demand[key]:
-                for demand in demands:
-                    cost += self.get_transponders_cost(demand)
+            for demand in chromosome.paths_demand[key]:
+                cost += self.get_transponders_cost(demand)
         return cost
 
     @staticmethod

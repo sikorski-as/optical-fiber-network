@@ -8,6 +8,7 @@ class Algorithm:
         self.chromosomes = chromosomes
         self.network = network
         self.chromosome_utils = ChromosomeUtils()
+        self.results = list()
 
     def pick_bests_sorted(self, chromosomes, fun, k):
         valued_chromosomes = list()
@@ -43,6 +44,7 @@ class Algorithm:
             self.chromosomes = self.pick_bests(self.chromosomes, self.chromosome_utils.get_network_cost, size + 1, )
             result = self.chromosome_utils.get_network_cost(self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_cost, 1)[0], Parameters.optical_fiber_capacity)
             print(str(i) + " - " + str(result))
+            self.results.append(result)
             i += 1
             if result == 0:
                 break
@@ -72,6 +74,7 @@ class Algorithm:
                 self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_cost, 1)[0],
                 Parameters.optical_fiber_capacity)
             print(str(i) + " - " + str(result))
+            self.results.append(result)
             i += 1
             if last_result == result:
                 last_result_counter += 1

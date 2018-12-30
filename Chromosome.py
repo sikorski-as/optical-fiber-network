@@ -55,7 +55,7 @@ class ChromosomeUtils:
 
         for key in sorted(chromosome.paths_dict):
             for demand, path in zip(chromosome.paths_demand[key], chromosome.paths_dict[key]):
-                waves_used = ceil(demand / 100)
+                waves_used = self.get_waves_cost(demand)
                 for edge in self.pairwise(path):
                     sorted_edge = tuple(sorted(edge))
                     if edges_waves_used.get(sorted_edge) is None:
@@ -64,11 +64,22 @@ class ChromosomeUtils:
                         edges_waves_used[sorted_edge] += waves_used
 
         for edge in sorted(edges_waves_used):
-            # print("{} - {}".format(edge, edges_waves_used[edge]))
+            #print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
             sorted_edge = tuple(sorted(edge))
             if edges_waves_used[sorted_edge] > optical_fiber_capacity:
                 cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
         return cost
+
+    def get_waves_cost(self, demand):
+        if demand % 10 != 0:
+            demand = demand - (demand % 10) + 10
+        transponder100tmp = math.floor(demand / 100)
+        demand -= transponder100tmp * 100
+        transponder10, transponder40, transponder100 = self.ct[demand]
+        transponder100 += transponder100tmp
+        cost = transponder10 + transponder40 + transponder100
+        return cost
+
 
     def get_transponders_cost(self, demand):
         if demand % 10 != 0:
@@ -110,6 +121,7 @@ class ChromosomeUtils:
                 tmp = chromosome_1.paths_demand[key]
                 chromosome_1.paths_demand[key] = chromosome_2.paths_demand[key]
                 chromosome_2.paths_demand[key] = tmp
+                
         return [chromosome_1, chromosome_2]
 
     @staticmethod
@@ -173,7 +185,6 @@ class ChromosomeUtils:
         return chromosome
 
 
-
 class DemandUtils:
     @staticmethod
     def generate_random_demands(demand):  # creates 3-el list of demands
@@ -195,26 +206,27 @@ class DemandUtils:
 
 
 class ChromosomeCreator:
-    def __init__(self):
-        self.chromosomes = list()
 
     def generate_chromosomes_random(self, network, number_of_chromosomes):
+        chromosomes = list()
         for i in range(0, number_of_chromosomes):
-            self.chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
+            chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
 
-        return self.chromosomes
+        return chromosomes
 
     def generate_chromosomes_all_in_one(self, network, number_of_chromosomes):
+        chromosomes = list()
         for i in range(0, number_of_chromosomes):
-            self.chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
+            chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
 
-        return self.chromosomes
+        return chromosomes
 
     def generate_chromosomes_mixed(self, network, number_of_chromosomes, ratio):
+        chromosomes = list()
         for i in range(0, number_of_chromosomes):
             if random.randrange(1, 101) > ratio:
-                self.chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
+                chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
             else:
-                self.chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
+                chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
 
-        return self.chromosomes
+        return chromosomes

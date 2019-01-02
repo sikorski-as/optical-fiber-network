@@ -50,30 +50,79 @@ def example():
 # print(chromosome_utils.get_network_cost(better_chromosome[0], OpticalFibersCapacity.L96))
 # print(chromosome_utils.get_network_cost(better_chromosome[0], OpticalFibersCapacity.L96))
 
-# for chromosome in better_chromosome:
-# 	print(chromosome_utils.get_network_cost(chromosome, OpticalFibersCapacity.L96), end=" ")
-# print()
-# for chromosome in better_chromosome1:
-# 	print(chromosome_utils.get_network_cost(chromosome, OpticalFibersCapacity.L96), end=" ")
+    for chromosome in better_chromosome:
+        print(chromosome_utils.get_network_cost(chromosome, OpticalFibersCapacity.L96), end=" ")
+    print()
+    for chromosome in better_chromosome1:
+        print(chromosome_utils.get_network_cost(chromosome, OpticalFibersCapacity.L96), end=" ")
 
     plot_gen = PlotGenerator([10, 7, 3, 2, 1, 0])
     plot_gen.show_plot()
 
 
-def marcin():
+def alg1_usa():
     network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from,
                                                              'Resources/net-us.xml')
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
-    chromosomes = chromosome_creator.generate_chromosomes_all_in_one(network, Parameters.amount_of_chromosomes)
+    chromosomes = chromosome_creator.generate_chromosomes_all_in_one(network, Parameters.amount_of_chromosomes_usa)
     algorithm = Algorithm(chromosomes, network)
-    chromosomes = algorithm.algorithm1()
+    chromosomes = algorithm.algorithm1_usa()
     print(algorithm.results)
     plot_gen = PlotGenerator(algorithm.results)
     plot_gen.show_plot()
 
     for chromosome in chromosomes:
-        cost = chromosome_utils.get_network_cost(chromosome, Parameters.optical_fiber_capacity)
+        cost = chromosome_utils.get_network_cost_100(chromosome, Parameters.optical_fiber_capacity_usa)
+        if cost == 0:
+            print(cost)
+            for key in chromosome.paths_demand:
+                for demand in chromosome.paths_demand[key]:
+                    print(demand, end=' ')
+                print()
+
+            print()
+
+
+def alg1_pol():
+    from Network import Network
+    network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=3)
+
+    chromosome_creator = ChromosomeCreator()
+    chromosome_utils = ChromosomeUtils()
+    chromosomes = chromosome_creator.generate_chromosomes_mixed(network, Parameters.amount_of_chromosomes_pol, 50)
+    algorithm = Algorithm(chromosomes, network)
+    chromosomes = algorithm.algorithm1_pol()
+    print(algorithm.results)
+    plot_gen = PlotGenerator(algorithm.results)
+    plot_gen.show_plot()
+
+    for chromosome in chromosomes:
+        cost = chromosome_utils.get_network_cost(chromosome, Parameters.optical_fiber_capacity_pol)
+        if cost == 0:
+            print(cost)
+            for key in chromosome.paths_demand:
+                for demand in chromosome.paths_demand[key]:
+                    print(demand, end=' ')
+                print()
+
+            print()
+
+
+def alg2_pol():
+    from Network import Network
+    network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=3)
+    chromosome_creator = ChromosomeCreator()
+    chromosome_utils = ChromosomeUtils()
+    chromosomes = chromosome_creator.generate_chromosomes_semi_random(network, Parameters.amount_of_chromosomes_pol)
+    algorithm = Algorithm(chromosomes, network)
+    chromosomes = algorithm.algorithm2_pol()
+    print(algorithm.results)
+    plot_gen = PlotGenerator(algorithm.results)
+    plot_gen.show_plot()
+
+    for chromosome in chromosomes:
+        cost = chromosome_utils.get_network_transponders_cost(chromosome, OpticalFibersCapacity.L96)
         if cost == 0:
             print(cost)
             for key in chromosome.paths_demand:
@@ -85,7 +134,7 @@ def marcin():
 
 
 def main():
-    marcin()
+    alg2_pol()
 
 
 if __name__ == '__main__':

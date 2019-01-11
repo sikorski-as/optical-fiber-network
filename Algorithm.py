@@ -83,7 +83,7 @@ class Algorithm:
         i = 0
         last_result = 0
         last_result_counter = 0
-        while last_result_counter != 20:
+        while last_result_counter != 50:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
                 if random.randrange(1, 101) < 10:

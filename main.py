@@ -90,15 +90,15 @@ def alg1_pol():
 
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
-    chromosomes = chromosome_creator.generate_chromosomes_mixed(network, Parameters.amount_of_chromosomes_pol, 50)
+    chromosomes = chromosome_creator.generate_chromosomes_all_in_one(network, Parameters.amount_of_chromosomes_pol)
     algorithm = Algorithm(chromosomes, network)
     chromosomes = algorithm.algorithm1_pol()
     print(algorithm.results)
-    plot_gen = PlotGenerator(algorithm.results)
-    plot_gen.show_plot()
+    # plot_gen = PlotGenerator(algorithm.results)
+    # plot_gen.show_plot()
 
     for chromosome in chromosomes:
-        cost = chromosome_utils.get_network_cost(chromosome, Parameters.optical_fiber_capacity_pol)
+        cost = chromosome_utils.get_network_cost_100(chromosome, Parameters.optical_fiber_capacity_pol)
         if cost == 0:
             print(cost)
             for key in chromosome.paths_demand:

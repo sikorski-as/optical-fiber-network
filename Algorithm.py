@@ -87,12 +87,12 @@ class Algorithm:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
                 if random.randrange(1, 101) < 10:
-                    a = random.randrange(1, 10)
-                    b = random.randrange(a + 1, 11)
+                    a = random.randrange(1, 11)
+                    b = random.randrange(a + 1, 12)
                     crossed_chromosomes[0] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[0], [(a, b)])
                 if random.randrange(1, 101) < 10:
-                    a = random.randrange(1, 10)
-                    b = random.randrange(a + 1, 11)
+                    a = random.randrange(1, 11)
+                    b = random.randrange(a + 1, 12)
                     crossed_chromosomes[1] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[1], [(a, b)])
                 self.chromosomes.append(crossed_chromosomes[0])  # append all?
                 self.chromosomes.append(crossed_chromosomes[1])

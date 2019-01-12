@@ -246,7 +246,7 @@ class ChromosomeUtils:
         chromosome.set_paths_dict(network.paths_dict)
         for pair in sorted(network.demands_dict):
             demand = network.demands_dict[pair]
-            chromosome.set_paths_demand(pair, DemandUtils.generate_random_demands(demand))
+            chromosome.set_paths_demand(pair, DemandUtils.generate_semi_random_demands(demand))
 
         return chromosome
 
@@ -281,6 +281,8 @@ class DemandUtils:
         demands.append(semi_rand_number)
         demands.append(int(demand - demands[0] - demands[1]))
 
+        return demands
+
 
 class ChromosomeCreator:
 
@@ -307,6 +309,7 @@ class ChromosomeCreator:
                 chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
 
         return chromosomes
+
 
     def generate_chromosomes_semi_random(self, network, number_of_chromosomes):
         chromosomes = list()

@@ -7,11 +7,15 @@ from Algorithm import Algorithm
 
 
 def example():
+
+
+
     network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from,
                                                              'Resources/net-pl.xml')
 
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
+
 
     # chromosomes = chromosome_creator.generate_chromosomes_random(network, Parameters.amount_of_chromosomes)
     #
@@ -34,7 +38,8 @@ def example():
     better_chromosome = chromosome_creator.generate_chromosomes_all_in_one(network, n)
     better_chromosome1 = chromosome_creator.generate_chromosomes_random(network, n)
 
-
+    for key in better_chromosome[0].paths_dict:
+        print(key)
 # for key in sorted(better_chromosome[0].paths_dict):
 # 	print(key)
 # 	for path in better_chromosome[0].paths_dict[key]:
@@ -111,10 +116,13 @@ def alg1_pol():
 
 def alg2_pol():
     from Network import Network
+
     network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=3)
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
-    chromosomes = chromosome_creator.generate_chromosomes_semi_random(network, Parameters.amount_of_chromosomes_pol)
+    chromosomes = chromosome_creator.generate_chromosomes_semi_random(network, 20*Parameters.amount_of_chromosomes_pol)
+    algorithm = Algorithm(chromosomes, network)
+    chromosomes = algorithm.pick_bests(chromosomes, chromosome_utils.get_network_transponders_cost, Parameters.amount_of_chromosomes_pol, Parameters.optical_fiber_capacity_pol)
     algorithm = Algorithm(chromosomes, network)
     chromosomes = algorithm.algorithm2_pol()
     print(algorithm.results)

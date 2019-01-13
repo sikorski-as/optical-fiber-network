@@ -56,7 +56,7 @@ class ChromosomeUtils:
         30: [0, 1, 0],
         40: [0, 1, 0],
         50: [1, 1, 0],
-        60: [1, 2, 0],
+        60: [0, 2, 0],
         70: [0, 2, 0],
         80: [0, 2, 0],
         90: [0, 0, 1]
@@ -151,7 +151,7 @@ class ChromosomeUtils:
             for demand in chromosome.paths_demand[key]:
                 cost += self.get_transponders_cost2(demand)
         if self.get_network_cost(chromosome, optical_fiber_capacity) > 0:
-            cost += 100
+            cost += 1000
         return cost * 2
 
     @staticmethod

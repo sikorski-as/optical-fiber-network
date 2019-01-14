@@ -117,6 +117,8 @@ class ChromosomeUtils:
     def get_waves_cost2(self, demand):
         if demand % 10 != 0:
             demand = demand - (demand % 10) + 10
+        if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
+            return demand / 40
         transponder100tmp = math.floor(demand / 100)
         demand -= transponder100tmp * 100
         transponder10, transponder40, transponder100 = self.ct2[demand]
@@ -138,6 +140,8 @@ class ChromosomeUtils:
     def get_transponders_cost2(self, demand):
         if demand % 10 != 0:
             demand = demand - (demand % 10) + 10
+        if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
+            return (demand / 40) * 2
         transponder100tmp = math.floor(demand / 100)
         demand -= transponder100tmp * 100
         transponder10, transponder40, transponder100 = self.ct2[demand]
@@ -150,8 +154,9 @@ class ChromosomeUtils:
         for key in sorted(chromosome.paths_dict):
             for demand in chromosome.paths_demand[key]:
                 cost += self.get_transponders_cost2(demand)
-        if self.get_network_cost(chromosome, optical_fiber_capacity) > 0:
-            cost += 1000
+        overflow = self.get_network_cost(chromosome, optical_fiber_capacity)
+        if overflow > 0:
+            cost += math.pow(overflow, 3)
         return cost * 2
 
     @staticmethod
@@ -250,6 +255,17 @@ class ChromosomeUtils:
 
         return chromosome
 
+    @staticmethod
+    def generate_chromosome_usa(network):
+        chromosome = Chromosome()
+        chromosome.set_paths_dict(network.paths_dict)
+        for pair in sorted(network.demands_dict):
+            # demand = network.demands_dict[pair]
+            chromosome.set_paths_demand(pair, DemandUtils.generate_usa(170))
+
+        return chromosome
+
+
 
 class DemandUtils:
     @staticmethod
@@ -280,6 +296,16 @@ class DemandUtils:
         semi_rand_number = rand_number - rand_number % 40
         demands.append(semi_rand_number)
         demands.append(int(demand - demands[0] - demands[1]))
+
+        return demands
+
+    @staticmethod
+    def generate_usa(demand):
+        demands = list()
+        rand_number = random.randrange(0, demand)
+        semi_rand_number = rand_number - rand_number % 10
+        demands.append(semi_rand_number)
+        demands.append(int(demand - demands[0]))
 
         return demands
 
@@ -315,5 +341,12 @@ class ChromosomeCreator:
         chromosomes = list()
         for i in range(0, number_of_chromosomes):
             chromosomes.append(ChromosomeUtils.generate_chromosome_semi_random(network))
+
+        return chromosomes
+
+    def generate_chromosomes_usa(self, network, number_of_chromosomes):
+        chromosomes = list()
+        for i in range(0, number_of_chromosomes):
+            chromosomes.append(ChromosomeUtils.generate_chromosome_usa(network))
 
         return chromosomes

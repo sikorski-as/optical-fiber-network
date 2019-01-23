@@ -154,9 +154,9 @@ class ChromosomeUtils:
         for key in sorted(chromosome.paths_dict):
             for demand in chromosome.paths_demand[key]:
                 cost += self.get_transponders_cost2(demand)
-        overflow = self.get_network_cost(chromosome, optical_fiber_capacity)
-        if overflow > 0:
-            cost += math.pow(overflow, 3)
+        # overflow = self.get_network_cost(chromosome, optical_fiber_capacity)
+        # if overflow > 0:
+        #         #     cost += math.pow(overflow, 3)
         return cost * 2
 
     @staticmethod

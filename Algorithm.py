@@ -31,11 +31,11 @@ class Algorithm:
         while True:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(1, 19)
                     b = random.randrange(a + 1, 20)
                     crossed_chromosomes[0] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[0], [(a, b)])
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(1, 19)
                     b = random.randrange(a + 1, 20)
                     crossed_chromosomes[1] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[1], [(a, b)])
@@ -58,11 +58,11 @@ class Algorithm:
         while True:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
                     b = random.randrange(a + 1, 12)
                     crossed_chromosomes[0] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[0], [(a, b)])
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
                     b = random.randrange(a + 1, 12)
                     crossed_chromosomes[1] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[1], [(a, b)])
@@ -86,12 +86,12 @@ class Algorithm:
         while last_result_counter != 10:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
                     b = random.randrange(a + 1, 12)
                     crossed_chromosomes[0] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[0], [(a, b)])
                     # print("mutuje")
-                if random.randrange(1, 101) < 10:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
                     b = random.randrange(a + 1, 12)
                     crossed_chromosomes[1] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[1], [(a, b)])
@@ -120,11 +120,11 @@ class Algorithm:
         while last_result_counter != 10:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes([self.chromosomes[j], self.chromosomes[j + 1]])
-                if random.randrange(1, 101) < 30:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 25)
                     b = random.randrange(a + 1, 26)
                     crossed_chromosomes[0] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[0], [(a, b)])
-                if random.randrange(1, 101) < 30:
+                if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 25)
                     b = random.randrange(a + 1, 26)
                     crossed_chromosomes[1] = self.chromosome_utils.mutate_chromosome(crossed_chromosomes[1], [(a, b)])

@@ -295,4 +295,20 @@ def generate_network_with_admissible_paths(max_path_amount, file_path):
 	return net
 
 
-
+def generate_network_with_admissible_paths2(max_path_amount, file_path):
+	net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
+	visited = set()
+	for element in net.nodes_dict:
+		el_id = net.nodes_dict[element]
+		visited.add(element)
+		for vertex in set(net.nodes_dict) - visited:
+			v_id = net.nodes_dict[vertex]
+			pair = (el_id, v_id)
+			all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
+			admissible_paths = list()
+			admissible_paths.append(list(all_paths_between[0]))		# always add the shortest path
+			random_paths = random.sample(all_paths_between[1:], 1)
+			for path in random_paths:
+				admissible_paths.append(list(path))
+			net.add_admissible_paths(admissible_paths)
+	return net

@@ -11,9 +11,11 @@ class OpticalFibersCapacity(IntEnum):
 
 class Parameters:
     number_of_adm_paths_to_choose_from = 5
-    probability_of_crossing_genes = 70  # 0 - 100
-    amount_of_chromosomes_usa = 200  # mi
+    probability_of_crossing_genes = 50  # 0 - 100
+    probability_of_mutation = 30
+    amount_of_chromosomes_usa = 150  # mi
     amount_of_chromosomes_pol = 100  # mi
     optical_fiber_capacity_usa = OpticalFibersCapacity.L96
     optical_fiber_capacity_pol = OpticalFibersCapacity.L32
+
 

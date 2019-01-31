@@ -232,6 +232,24 @@ class ChromosomeUtils:
         return [chromosome_1, chromosome_2]
 
     @staticmethod
+    def cross_chromosomes_one_gene(pair_of_chromosomes):
+
+        if len(pair_of_chromosomes) != 2:
+            return
+
+        chromosome_1 = copy.deepcopy(pair_of_chromosomes[0])
+        chromosome_2 = copy.deepcopy(pair_of_chromosomes[1])
+
+        if random.randrange(1, 101) < Parameters.probability_of_crossing_genes:
+            key = random.choice(list(chromosome_1.paths_dict.keys()))
+            chromosome_1.paths_demand[key], chromosome_2.paths_demand[key] = \
+                chromosome_2.paths_demand[key], chromosome_1.paths_demand[key]
+            chromosome_1.transponders_used[key], chromosome_2.transponders_used[key] = \
+                chromosome_2.transponders_used[key], chromosome_1.transponders_used[key]
+
+        return [chromosome_1, chromosome_2]
+
+    @staticmethod
     def cross_chromosomes2(pair_of_chromosomes, loci):
         """ from 0 to loci[0] not switch then loci[0] - loci[1] switch.. """
 

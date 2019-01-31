@@ -5,7 +5,7 @@ from Chromosome import ChromosomeCreator
 from Chromosome import ChromosomeUtils
 from Parameters import Parameters, OpticalFibersCapacity
 from Algorithm import Algorithm
-
+from Network import Network
 
 def alg1_usa():
     print("Problem alokacji dla sieci amerykanskiej " + str(Parameters.optical_fiber_capacity_usa))
@@ -212,7 +212,7 @@ def pol_170():
     print("Problem minimalizaji kosztu dla sieci polskiej")
     print("Chromosomy: " + str(Parameters.amount_of_chromosomes_pol))
     print("Przepustowosc: " + str(OpticalFibersCapacity.L32.value))
-    from Network import Network
+
     network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=4)
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
@@ -270,18 +270,23 @@ def test():
     # print(random.choice(transponders))
 
 
-    tab = [i for i in range(0, 110)]
-    tab2 = [i for i in range(100, 0, -2)]
+    # tab = [i for i in range(0, 110)]
+    # tab2 = [i for i in range(100, 0, -2)]
+    #
+    # plot_generator = PlotGenerator([[tab, 'g--'], [tab2, 'r--']])
+    # plot_generator.show_plot()
+    # #print(tab)
 
-    plot_generator = PlotGenerator([[tab, 'g--'], [tab2, 'r--']])
-    plot_generator.show_plot()
-    #print(tab)
-
+    network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=4)
+    chromosome_creator = ChromosomeCreator()
+    chromosome_utils = ChromosomeUtils()
+    chromosomes = chromosome_creator.generate_chromosomes_pol_170(network, Parameters.amount_of_chromosomes_pol)
+    print(random.choice(list(chromosomes[0].paths_dict.keys())))
 
 def main():
-    usa_90()
+    #usa_90()
 
-    #pol_170()
+    # pol_170()
     # Problem alokacji dla sieci polskiej
     # alg1_pol()
     # Problem minimalizaji kosztu dla sieci polskiej
@@ -294,7 +299,7 @@ def main():
     # alg3_usa()
     # Problem minimalizacji kosztu dla sieci amerykanskiej z 2 sieczkami predefiniowanymi i 170 demand na kazdym
     # alg4_usa()
-    #test()
+    test()
 
 
 if __name__ == '__main__':

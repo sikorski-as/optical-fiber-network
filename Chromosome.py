@@ -111,6 +111,26 @@ class ChromosomeUtils:
                 cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
         return cost
 
+    def get_network_cost_transponders_debug(self, chromosome, optical_fiber_capacity):
+        edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
+        cost = 0  # edge 9L, capacity 8L -> cost += 1
+
+        for key in sorted(chromosome.paths_dict):
+            for transponders, path in zip(chromosome.transponders_used[key], chromosome.paths_dict[key]):
+                waves_used = sum(transponders)
+                for edge in self.pairwise(path):
+                    sorted_edge = tuple(sorted(edge))
+                    if edges_waves_used.get(sorted_edge) is None:
+                        edges_waves_used[sorted_edge] = waves_used
+                    else:
+                        edges_waves_used[sorted_edge] += waves_used
+
+        for edge in sorted(edges_waves_used):
+            print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
+            sorted_edge = tuple(sorted(edge))
+            if edges_waves_used[sorted_edge] > optical_fiber_capacity:
+                cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
+        return cost
 
     def get_network_cost_100(self, chromosome, optical_fiber_capacity):  # taking only 100 transponders to calculate
         edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
@@ -339,7 +359,7 @@ class ChromosomeUtils:
             # demand = network.demands_dict[pair]
             demands, transponders = demand_utils.generate_demands_and_transponders_config_all_in_one(90,
                                                                                                      self.transponders_90,
-                                                                                                     2)
+                                                                                                     Parameters.number_of_adm_paths_usa)
             chromosome.set_paths_demand(pair, demands)
             chromosome.set_transponders_used(pair, transponders)
         return chromosome

@@ -1,4 +1,7 @@
 import random
+import time
+import math
+
 from Chromosome import ChromosomeUtils
 from Parameters import Parameters, OpticalFibersCapacity
 
@@ -9,6 +12,7 @@ class Algorithm:
         self.network = network
         self.chromosome_utils = ChromosomeUtils()
         self.results = list()
+        self.time_elapsed = list()
 
     def pick_bests_sorted(self, chromosomes, fun, k, capacity):
         valued_chromosomes = list()
@@ -111,8 +115,8 @@ class Algorithm:
             self.chromosomes = self.pick_bests(self.chromosomes, self.chromosome_utils.get_network_transponders_cost,
                                                size + 1, OpticalFibersCapacity.L96)
             best_chromosome = \
-            self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_cost, 1,
-                                   OpticalFibersCapacity.L96)[0]
+                self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_cost, 1,
+                                       OpticalFibersCapacity.L96)[0]
             result = self.chromosome_utils.get_network_transponders_cost(best_chromosome, OpticalFibersCapacity.L96)
             result_cost = self.chromosome_utils.get_network_cost(best_chromosome, OpticalFibersCapacity.L96)
             print(str(i) + " - " + str(result) + " - " + str(result_cost))
@@ -147,8 +151,8 @@ class Algorithm:
             self.chromosomes = self.pick_bests(self.chromosomes, self.chromosome_utils.get_network_transponders_cost,
                                                size + 1, OpticalFibersCapacity.L96)
             best_chromosome = \
-            self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_cost, 1,
-                                   OpticalFibersCapacity.L96)[0]
+                self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_cost, 1,
+                                       OpticalFibersCapacity.L96)[0]
             result = self.chromosome_utils.get_network_transponders_cost(best_chromosome, OpticalFibersCapacity.L96)
             result_cost = self.chromosome_utils.get_network_cost(best_chromosome, OpticalFibersCapacity.L96)
             print(str(i) + " - " + str(result) + " - " + str(result_cost))
@@ -166,9 +170,10 @@ class Algorithm:
         i = 0
         last_result = 0
         last_result_counter = 0
-        while last_result_counter != 100:
+        start_time = time.time()
+        while i <= Parameters.amount_of_repetitions:
             for j in range(0, size, 2):
-                crossed_chromosomes = self.chromosome_utils.cross_chromosomes(
+                crossed_chromosomes = self.chromosome_utils.cross_chromosomes_one_gene(
                     [self.chromosomes[j], self.chromosomes[j + 1]])
                 if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
@@ -182,15 +187,20 @@ class Algorithm:
                     # print("mutuje")
                 self.chromosomes.append(crossed_chromosomes[0])
                 self.chromosomes.append(crossed_chromosomes[1])
-            self.chromosomes = self.pick_bests(self.chromosomes, self.chromosome_utils.get_network_transponders_configuration_cost,
+            self.chromosomes = self.pick_bests(self.chromosomes,
+                                               self.chromosome_utils.get_network_transponders_configuration_cost,
                                                size + 1, optical_fiber_capacity)
             best_chromosome = \
-            self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_configuration_cost, 1,
-                                   optical_fiber_capacity)[0]
-            result = self.chromosome_utils.get_network_transponders_configuration_cost(best_chromosome, optical_fiber_capacity)
+                self.pick_bests_sorted(self.chromosomes,
+                                       self.chromosome_utils.get_network_transponders_configuration_cost, 1,
+                                       optical_fiber_capacity)[0]
+            result = self.chromosome_utils.get_network_transponders_configuration_cost(best_chromosome,
+                                                                                       optical_fiber_capacity)
             result_cost = self.chromosome_utils.get_network_cost_transponders(best_chromosome, optical_fiber_capacity)
-            print(str(i) + " - " + str(result) + " - " + str(result_cost))
+            print(str(i) + " - " + str(result) + " - " + str(result_cost) + " - time: " + str(
+                math.ceil(time.time() - start_time)))
             self.results.append(result)
+            self.time_elapsed.append(math.ceil(time.time() - start_time))
             i += 1
             if last_result == result:
                 last_result_counter += 1
@@ -204,7 +214,8 @@ class Algorithm:
         i = 0
         last_result = 0
         last_result_counter = 0
-        while last_result_counter != 1:
+        start_time = time.time()
+        while i <= Parameters.amount_of_repetitions:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes(
                     [self.chromosomes[j], self.chromosomes[j + 1]])
@@ -220,15 +231,20 @@ class Algorithm:
                     # print("mutuje")
                 self.chromosomes.append(crossed_chromosomes[0])
                 self.chromosomes.append(crossed_chromosomes[1])
-            self.chromosomes = self.pick_bests(self.chromosomes, self.chromosome_utils.get_network_transponders_configuration_cost,
+            self.chromosomes = self.pick_bests(self.chromosomes,
+                                               self.chromosome_utils.get_network_transponders_configuration_cost,
                                                size + 1, optical_fiber_capacity)
             best_chromosome = \
-            self.pick_bests_sorted(self.chromosomes, self.chromosome_utils.get_network_transponders_configuration_cost, 1,
-                                   optical_fiber_capacity)[0]
-            result = self.chromosome_utils.get_network_transponders_configuration_cost(best_chromosome, optical_fiber_capacity)
+                self.pick_bests_sorted(self.chromosomes,
+                                       self.chromosome_utils.get_network_transponders_configuration_cost, 1,
+                                       optical_fiber_capacity)[0]
+            result = self.chromosome_utils.get_network_transponders_configuration_cost(best_chromosome,
+                                                                                       optical_fiber_capacity)
             result_cost = self.chromosome_utils.get_network_cost_transponders(best_chromosome, optical_fiber_capacity)
-            print(str(i) + " - " + str(result) + " - " + str(result_cost))
+            print(str(i) + " - " + str(result) + " - " + str(result_cost) + " - time: " + str(
+                math.ceil(time.time() - start_time)))
             self.results.append(result)
+            self.time_elapsed.append(math.ceil(time.time() - start_time))
             i += 1
             if last_result == result:
                 last_result_counter += 1

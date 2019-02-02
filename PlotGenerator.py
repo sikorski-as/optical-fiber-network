@@ -16,12 +16,12 @@ class PlotGenerator:
         plt.axis([-0.1, len(x_axis), min(data) - 100, max(data) + 100])
 
         for x, y in zip(chosen_x_axis, chosen_data):
-            plt.annotate("({}, {})".format(x, y), [x, y], xytext=[x + 0.05, y + 0.3])
+            plt.annotate("({}, {})".format(x, y), [x, y], xytext=[x + 0.05, y + 0.9])
 
     def show_plot(self):
         for data, design in self.data:
             self.add_data_to_plot(data, design)
 
-        plt.ylabel("Koszt")
-        plt.xlabel("Numer iteracji")
+        plt.ylabel("Cost")
+        plt.xlabel("Iteration")
         plt.show()

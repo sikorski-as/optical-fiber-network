@@ -1,12 +1,13 @@
 import Network
 import random
 from PlotGenerator import PlotGenerator
-from Chromosome import ChromosomeCreator
+from Chromosome import ChromosomeCreator, Chromosome
 from Chromosome import ChromosomeUtils
 from Parameters import Parameters, OpticalFibersCapacity
 from Algorithm import Algorithm
 from Network import Network
 import ast
+import json
 
 def alg1_usa():
     print("Problem alokacji dla sieci amerykanskiej " + str(Parameters.optical_fiber_capacity_usa))
@@ -217,10 +218,10 @@ def pol_170():
     print("Chromosomy: " + str(Parameters.amount_of_chromosomes_pol))
     print("Przepustowosc: " + str(OpticalFibersCapacity.L32.value))
 
-    network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=4)
+    network = Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=Parameters.number_of_adm_paths_pol)
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
-    chromosomes = chromosome_creator.generate_chromosomes_pol_170(network, Parameters.amount_of_chromosomes_pol)
+    chromosomes = chromosome_creator.generate_chromosomes_pol_170(network, 20*Parameters.amount_of_chromosomes_pol)
 
     algorithm = Algorithm(chromosomes, network)
     chromosomes = algorithm.pick_bests(chromosomes, chromosome_utils.get_network_transponders_configuration_cost,
@@ -263,17 +264,82 @@ def test():
     return
 
 
+def konwertuj_klucze_do_stringa(dictionary):
+    new_dict = dict()
+    for k, v in zip(dictionary.keys(), dictionary.values()):
+        new_dict[str(k)] = v
+
+    return new_dict
+
+
+def wczytaj_chromosom_do_pliku(chromosome, name):
+
+    file = open("wyniki/{}_transponders.txt".format(name), "w")
+    converted_transponders_dict = konwertuj_klucze_do_stringa(chromosome.transponders_used)
+    file.write(json.dumps(converted_transponders_dict))
+    file.close()
+    file = open("wyniki/{}_demands.txt".format(name), "w")
+    converted_demand_dict = konwertuj_klucze_do_stringa(chromosome.paths_demand)
+    file.write(json.dumps(converted_demand_dict))
+    file.close()
+    file = open("wyniki/{}_paths.txt".format(name), "w")
+    converted_paths = konwertuj_klucze_do_stringa(chromosome.paths_dict)
+    file.write(json.dumps(converted_paths))
+    file.close()
+
+
 def wczytywanie_do_pliku(data, name):
 
     results, time, _ = data
-    file = open("wyniki/{}.txt".format(name), "w")
+    file = open("wyniki/{}_score.txt".format(name), "w")
     file.write(str(results))
     file = open("wyniki/{}_time.txt".format(name), "w")
     file.write(str(time))
 
 
+def wczytaj_z_pliku(name):
+    new_dict = dict()
+    file = open(name, "r")
+    data = json.loads(file.read())
+
+    for k, v in zip(data.keys(), data.values()):
+        a, b = k[1:len(k)-1].replace(" ", "").split(",")
+        a, b = int(a), int(b)
+        new_dict[(a, b)] = v
+
+    return new_dict
+
+
 def main():
-    #usa_90()
+
+    name = "chromosome"
+    demands = wczytaj_z_pliku("wyniki/{}_demands.txt".format(name))
+    transponders = wczytaj_z_pliku("wyniki/{}_transponders.txt".format(name))
+    paths = wczytaj_z_pliku("wyniki/{}_paths.txt".format(name))
+
+    # for k in demands.keys():
+    #     print("{} {} {} {}".format(k, demands[k], transponders[k], paths[k]))
+
+    chromosome_utils = ChromosomeUtils()
+    chromosome = Chromosome()
+    chromosome.paths_dict = paths
+    chromosome.transponders_used = transponders
+    chromosome.paths_demand = demands
+
+    # for k in demands.keys():
+    #     print("{} {} {} {}".format(k, chromosome.paths_demand[k], chromosome.transponders_used[k], chromosome.paths_dict[k]))
+
+    chromosome_utils.get_network_cost_transponders_debug(chromosome, Parameters.optical_fiber_capacity_usa)
+    # import Network
+    # network = Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from,
+    #                                                          'Resources/net-us.xml')
+    # chromosome_creator = ChromosomeCreator()
+    # chromosome_utils = ChromosomeUtils()
+    # chromosomes = chromosome_creator.generate_chromosomes_usa_90(network, Parameters.amount_of_chromosomes_usa)
+    #
+    # for k, v in zip(chromosomes[0].paths_demand.keys(), chromosomes[0].paths_demand.values()):
+    #     print("{} {}".format(k, v))
+    # usa_90()
 
     # result, chromosome = pol_170()
     # chromosome_utils = ChromosomeUtils()
@@ -294,8 +360,15 @@ def main():
     # alg4_usa()
     #test()
     #
-    data = pol_170()
-    wczytywanie_do_pliku(data, "pol_4_170_400_krzyzowanie_pelne")
+
+
+###### generating data to files
+    # data = usa_90()
+    # wczytaj_chromosom_do_pliku(data[2], "chromosome")
+
+
+
+    # wczytywanie_do_pliku(data, "usa_2_90_400_krzyzowanie_pelne")
 
     # file = open("wyniki/usa_2_90_krzyzowanie_pelne.txt", "r")
     # data = ast.literal_eval(file.read())

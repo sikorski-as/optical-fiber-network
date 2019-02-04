@@ -171,9 +171,9 @@ class Algorithm:
         last_result = 0
         last_result_counter = 0
         start_time = time.time()
-        while i <= Parameters.amount_of_repetitions:
+        while (time.time() - start_time) < Parameters.amount_of_time:
             for j in range(0, size, 2):
-                crossed_chromosomes = self.chromosome_utils.cross_chromosomes_one_gene(
+                crossed_chromosomes = self.chromosome_utils.cross_chromosomes(
                     [self.chromosomes[j], self.chromosomes[j + 1]])
                 if random.randrange(1, 101) < Parameters.probability_of_mutation:
                     a = random.randrange(0, 11)
@@ -215,7 +215,7 @@ class Algorithm:
         last_result = 0
         last_result_counter = 0
         start_time = time.time()
-        while i <= Parameters.amount_of_repetitions:
+        while (time.time() - start_time) < Parameters.amount_of_time:
             for j in range(0, size, 2):
                 crossed_chromosomes = self.chromosome_utils.cross_chromosomes(
                     [self.chromosomes[j], self.chromosomes[j + 1]])

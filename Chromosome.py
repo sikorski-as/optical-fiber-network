@@ -252,7 +252,7 @@ class ChromosomeUtils:
         return [chromosome_1, chromosome_2]
 
     @staticmethod
-    def cross_chromosomes_one_gene(pair_of_chromosomes):
+    def cross_chromosomes_one_gene_low_quality(pair_of_chromosomes):
 
         if len(pair_of_chromosomes) != 2:
             return
@@ -355,7 +355,7 @@ class ChromosomeUtils:
         chromosome = Chromosome()
         chromosome.set_paths_dict(network.paths_dict)
         demand_utils = DemandUtils()
-        for pair in sorted(network.demands_dict):
+        for pair in sorted(network.paths_dict):
             # demand = network.demands_dict[pair]
             demands, transponders = demand_utils.generate_demands_and_transponders_config_all_in_one(90,
                                                                                                      self.transponders_90,
@@ -372,7 +372,7 @@ class ChromosomeUtils:
             # demand = network.demands_dict[pair]
             demands, transponders = demand_utils.generate_demands_and_transponders_config_all_in_one(170,
                                                                                                      self.transponders_170,
-                                                                                                     4)
+                                                                                                     Parameters.number_of_adm_paths_pol)
             chromosome.set_paths_demand(pair, demands)
             chromosome.set_transponders_used(pair, transponders)
         return chromosome

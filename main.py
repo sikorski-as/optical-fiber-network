@@ -5,7 +5,7 @@ from Chromosome import ChromosomeCreator, Chromosome
 from Chromosome import ChromosomeUtils
 from Parameters import Parameters, OpticalFibersCapacity
 from Algorithm import Algorithm
-
+import Algorithm_with_lib_demo
 import ast
 import json
 
@@ -371,5 +371,9 @@ def test2():
     print(transponders_170)
 
 
+def test_lib():
+    Algorithm_with_lib_demo.test()
+
+
 if __name__ == '__main__':
-    main()
+    test_lib()

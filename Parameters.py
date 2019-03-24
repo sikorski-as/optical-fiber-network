@@ -10,16 +10,17 @@ class OpticalFibersCapacity(IntEnum):
 
 
 class Parameters:
-    number_of_adm_paths_to_choose_from = 5 #czy wybierac z puli czy brac n najkrótszych???
+    number_of_adm_paths_to_choose_from = 3 #czy wybierac z puli czy brac n najkrótszych???
 
-    probability_of_crossing_genes = 80  # 0 - 100
+    probability_of_crossing_genes = 50  # 0 - 100
     probability_of_mutation = 10
 
-    amount_of_chromosomes_usa = 100  # mi
+    amount_of_chromosomes_usa = 300  # mi
     amount_of_chromosomes_pol = 400  # mi
 
     optical_fiber_capacity_usa = OpticalFibersCapacity.L96
     optical_fiber_capacity_pol = OpticalFibersCapacity.L32
+    optical_fiber_capacity = OpticalFibersCapacity.L32
 
     transponders_cost = [1, 2, 7]
 

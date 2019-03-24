@@ -8,10 +8,13 @@ from Parameters import Parameters
 
 
 class Chromosome:
-    paths_dict = {}  # is this static?
+    """
+        Atributes:
+            paths_dict: key (x, y), value: list of paths between x and y
+    """
+    paths_dict = {}
 
     def __init__(self):
-        # self.paths_dict = {}    # pair(node1_id, node2_id) -> list of 3 paths
         self.paths_demand = {}  # pair(node1_id, node2_id) -> list of 3 demands, first demand - first path,
         self.transponders_used = {}  # pair(node1_id, node2_id) -> list of 3 lists of transponders_used [0, 2, 0], first configuration - first path,
         # sum of paths demand should be equal demand between two nodes
@@ -43,54 +46,55 @@ class ChromosomeUtils:
     transponders_90 = [[i, j, k] for i in range(0, 2) for j in range(0, 4) for k in range(0, 2) if
                        120 >= 10 * i + 40 * j + 100 * k >= 90]
 
-    ct = {
-        0: [0, 0, 0],
-        10: [1, 0, 0],
-        20: [2, 0, 0],
-        30: [0, 1, 0],
-        40: [0, 1, 0],
-        50: [1, 1, 0],
-        60: [2, 1, 0],
-        70: [0, 2, 0],
-        80: [0, 2, 0],
-        90: [0, 0, 1]
-    }
+    # ct = {
+    #     0: [0, 0, 0],
+    #     10: [1, 0, 0],
+    #     20: [2, 0, 0],
+    #     30: [0, 1, 0],
+    #     40: [0, 1, 0],
+    #     50: [1, 1, 0],
+    #     60: [2, 1, 0],
+    #     70: [0, 2, 0],
+    #     80: [0, 2, 0],
+    #     90: [0, 0, 1]
+    # }
+    #
+    # ct2 = {
+    #     0: [0, 0, 0],
+    #     10: [1, 0, 0],
+    #     20: [0, 1, 0],
+    #     30: [0, 1, 0],
+    #     40: [0, 1, 0],
+    #     50: [1, 1, 0],
+    #     60: [0, 2, 0],
+    #     70: [0, 2, 0],
+    #     80: [0, 2, 0],
+    #     90: [0, 0, 1]
+    # }
 
-    ct2 = {
-        0: [0, 0, 0],
-        10: [1, 0, 0],
-        20: [0, 1, 0],
-        30: [0, 1, 0],
-        40: [0, 1, 0],
-        50: [1, 1, 0],
-        60: [0, 2, 0],
-        70: [0, 2, 0],
-        80: [0, 2, 0],
-        90: [0, 0, 1]
-    }
-
-    def get_network_cost(self, chromosome, optical_fiber_capacity):
-        edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
-        cost = 0  # edge 9L, capacity 8L -> cost += 1
-
-        for key in sorted(chromosome.paths_dict):
-            for demand, path in zip(chromosome.paths_demand[key], chromosome.paths_dict[key]):
-                waves_used = self.get_waves_cost2(demand)
-                for edge in self.pairwise(path):
-                    sorted_edge = tuple(sorted(edge))
-                    if edges_waves_used.get(sorted_edge) is None:
-                        edges_waves_used[sorted_edge] = waves_used
-                    else:
-                        edges_waves_used[sorted_edge] += waves_used
-
-        for edge in sorted(edges_waves_used):
-            #print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
-            sorted_edge = tuple(sorted(edge))
-            if edges_waves_used[sorted_edge] > optical_fiber_capacity:
-                cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
-        return cost
+    # def get_network_cost(self, chromosome, optical_fiber_capacity):
+    #     edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
+    #     cost = 0  # edge 9L, capacity 8L -> cost += 1
+    #
+    #     for key in sorted(chromosome.paths_dict):
+    #         for demand, path in zip(chromosome.paths_demand[key], chromosome.paths_dict[key]):
+    #             waves_used = self.get_waves_cost2(demand)
+    #             for edge in self.pairwise(path):
+    #                 sorted_edge = tuple(sorted(edge))
+    #                 if edges_waves_used.get(sorted_edge) is None:
+    #                     edges_waves_used[sorted_edge] = waves_used
+    #                 else:
+    #                     edges_waves_used[sorted_edge] += waves_used
+    #
+    #     for edge in sorted(edges_waves_used):
+    #         #print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
+    #         sorted_edge = tuple(sorted(edge))
+    #         if edges_waves_used[sorted_edge] > optical_fiber_capacity:
+    #             cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
+    #     return cost
 
     def get_network_cost_transponders(self, chromosome, optical_fiber_capacity):
+        """liczy ile lambd za dużo"""
         edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
         cost = 0  # edge 9L, capacity 8L -> cost += 1
 
@@ -111,91 +115,91 @@ class ChromosomeUtils:
                 cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
         return cost
 
-    def get_network_cost_transponders_debug(self, chromosome, optical_fiber_capacity):
-        edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
-        cost = 0  # edge 9L, capacity 8L -> cost += 1
+    # def get_network_cost_transponders_debug(self, chromosome, optical_fiber_capacity):
+    #     edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
+    #     cost = 0  # edge 9L, capacity 8L -> cost += 1
+    #
+    #     for key in sorted(chromosome.paths_dict):
+    #         for transponders, path in zip(chromosome.transponders_used[key], chromosome.paths_dict[key]):
+    #             waves_used = sum(transponders)
+    #             for edge in self.pairwise(path):
+    #                 sorted_edge = tuple(sorted(edge))
+    #                 if edges_waves_used.get(sorted_edge) is None:
+    #                     edges_waves_used[sorted_edge] = waves_used
+    #                 else:
+    #                     edges_waves_used[sorted_edge] += waves_used
+    #
+    #     for edge in sorted(edges_waves_used):
+    #         print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
+    #         sorted_edge = tuple(sorted(edge))
+    #         if edges_waves_used[sorted_edge] > optical_fiber_capacity:
+    #             cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
+    #     return cost
 
-        for key in sorted(chromosome.paths_dict):
-            for transponders, path in zip(chromosome.transponders_used[key], chromosome.paths_dict[key]):
-                waves_used = sum(transponders)
-                for edge in self.pairwise(path):
-                    sorted_edge = tuple(sorted(edge))
-                    if edges_waves_used.get(sorted_edge) is None:
-                        edges_waves_used[sorted_edge] = waves_used
-                    else:
-                        edges_waves_used[sorted_edge] += waves_used
-
-        for edge in sorted(edges_waves_used):
-            print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
-            sorted_edge = tuple(sorted(edge))
-            if edges_waves_used[sorted_edge] > optical_fiber_capacity:
-                cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
-        return cost
-
-    def get_network_cost_100(self, chromosome, optical_fiber_capacity):  # taking only 100 transponders to calculate
-        edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
-        cost = 0  # edge 9L, capacity 8L -> cost += 1
-
-        for key in sorted(chromosome.paths_dict):
-            for demand, path in zip(chromosome.paths_demand[key], chromosome.paths_dict[key]):
-                waves_used = ceil(demand / 100)
-                for edge in self.pairwise(path):
-                    sorted_edge = tuple(sorted(edge))
-                    if edges_waves_used.get(sorted_edge) is None:
-                        edges_waves_used[sorted_edge] = waves_used
-                    else:
-                        edges_waves_used[sorted_edge] += waves_used
-
-        for edge in sorted(edges_waves_used):
-            # print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
-            sorted_edge = tuple(sorted(edge))
-            if edges_waves_used[sorted_edge] > optical_fiber_capacity:
-                cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
-        return cost
-
-    def get_waves_cost(self, demand):
-        if demand % 10 != 0:
-            demand = demand - (demand % 10) + 10
-        transponder100tmp = math.floor(demand / 100)
-        demand -= transponder100tmp * 100
-        transponder10, transponder40, transponder100 = self.ct[demand]
-        transponder100 += transponder100tmp
-        cost = transponder10 + transponder40 + transponder100
-        return cost
-
-    def get_waves_cost2(self, demand):
-        if demand % 10 != 0:
-            demand = demand - (demand % 10) + 10
-        if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
-            return demand / 40
-        transponder100tmp = math.floor(demand / 100)
-        demand -= transponder100tmp * 100
-        transponder10, transponder40, transponder100 = self.ct2[demand]
-        transponder100 += transponder100tmp
-        cost = transponder10 + transponder40 + transponder100
-        return cost
-
-    def get_transponders_cost(self, demand):
-        if demand % 10 != 0:
-            demand = demand - (demand % 10) + 10
-        transponder100tmp = math.floor(demand / 100)
-        demand -= transponder100tmp * 100
-        transponder10, transponder40, transponder100 = self.ct[demand]
-        transponder100 += transponder100tmp
-        cost = transponder10 + 3 * transponder40 + 7 * transponder100
-        return cost
-
-    def get_transponders_cost2(self, demand):
-        if demand % 10 != 0:
-            demand = demand - (demand % 10) + 10
-        if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
-            return (demand / 40) * 2
-        transponder100tmp = math.floor(demand / 100)
-        demand -= transponder100tmp * 100
-        transponder10, transponder40, transponder100 = self.ct2[demand]
-        transponder100 += transponder100tmp
-        cost = transponder10 + 2 * transponder40 + 5 * transponder100
-        return cost
+    # def get_network_cost_100(self, chromosome, optical_fiber_capacity):  # taking only 100 transponders to calculate
+    #     edges_waves_used = {}  # (node1_id, node2_id) -> amount of waves used
+    #     cost = 0  # edge 9L, capacity 8L -> cost += 1
+    #
+    #     for key in sorted(chromosome.paths_dict):
+    #         for demand, path in zip(chromosome.paths_demand[key], chromosome.paths_dict[key]):
+    #             waves_used = ceil(demand / 100)
+    #             for edge in self.pairwise(path):
+    #                 sorted_edge = tuple(sorted(edge))
+    #                 if edges_waves_used.get(sorted_edge) is None:
+    #                     edges_waves_used[sorted_edge] = waves_used
+    #                 else:
+    #                     edges_waves_used[sorted_edge] += waves_used
+    #
+    #     for edge in sorted(edges_waves_used):
+    #         # print("{} - {} -> {}".format(edge, edges_waves_used[edge], edges_waves_used[edge] - optical_fiber_capacity))
+    #         sorted_edge = tuple(sorted(edge))
+    #         if edges_waves_used[sorted_edge] > optical_fiber_capacity:
+    #             cost += edges_waves_used[sorted_edge] - optical_fiber_capacity
+    #     return cost
+    #
+    # def get_waves_cost(self, demand):
+    #     if demand % 10 != 0:
+    #         demand = demand - (demand % 10) + 10
+    #     transponder100tmp = math.floor(demand / 100)
+    #     demand -= transponder100tmp * 100
+    #     transponder10, transponder40, transponder100 = self.ct[demand]
+    #     transponder100 += transponder100tmp
+    #     cost = transponder10 + transponder40 + transponder100
+    #     return cost
+    #
+    # def get_waves_cost2(self, demand):
+    #     if demand % 10 != 0:
+    #         demand = demand - (demand % 10) + 10
+    #     if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
+    #         return demand / 40
+    #     transponder100tmp = math.floor(demand / 100)
+    #     demand -= transponder100tmp * 100
+    #     transponder10, transponder40, transponder100 = self.ct2[demand]
+    #     transponder100 += transponder100tmp
+    #     cost = transponder10 + transponder40 + transponder100
+    #     return cost
+    #
+    # def get_transponders_cost(self, demand):
+    #     if demand % 10 != 0:
+    #         demand = demand - (demand % 10) + 10
+    #     transponder100tmp = math.floor(demand / 100)
+    #     demand -= transponder100tmp * 100
+    #     transponder10, transponder40, transponder100 = self.ct[demand]
+    #     transponder100 += transponder100tmp
+    #     cost = transponder10 + 3 * transponder40 + 7 * transponder100
+    #     return cost
+    #
+    # def get_transponders_cost2(self, demand):
+    #     if demand % 10 != 0:
+    #         demand = demand - (demand % 10) + 10
+    #     if demand % 40 == 0 and math.floor(demand / 100) % 2 != 0:
+    #         return (demand / 40) * 2
+    #     transponder100tmp = math.floor(demand / 100)
+    #     demand -= transponder100tmp * 100
+    #     transponder10, transponder40, transponder100 = self.ct2[demand]
+    #     transponder100 += transponder100tmp
+    #     cost = transponder10 + 2 * transponder40 + 5 * transponder100
+    #     return cost
 
     @staticmethod
     def get_transponders_configuration_cost(transponders_configuration):
@@ -204,15 +208,15 @@ class ChromosomeUtils:
             total_cost += amount_of_transponders * cost_of_transponder
         return total_cost * 2
 
-    def get_network_transponders_cost(self, chromosome, optical_fiber_capacity):
-        cost = 0
-        for key in sorted(chromosome.paths_dict):
-            for demand in chromosome.paths_demand[key]:
-                cost += self.get_transponders_cost2(demand)
-        # overflow = self.get_network_cost(chromosome, optical_fiber_capacity)
-        # if overflow > 0:
-        #         #     cost += math.pow(overflow, 3)
-        return cost * 2
+    # def get_network_transponders_cost(self, chromosome, optical_fiber_capacity):
+    #     cost = 0
+    #     for key in sorted(chromosome.paths_dict):
+    #         for demand in chromosome.paths_demand[key]:
+    #             cost += self.get_transponders_cost2(demand)
+    #     # overflow = self.get_network_cost(chromosome, optical_fiber_capacity)
+    #     # if overflow > 0:
+    #     #         #     cost += math.pow(overflow, 3)
+    #     return cost * 2
 
     def get_network_transponders_configuration_cost(self, chromosome, optical_fiber_capacity):
         cost = 0
@@ -251,26 +255,26 @@ class ChromosomeUtils:
 
         return [chromosome_1, chromosome_2]
 
+    # @staticmethod
+    # def cross_chromosomes_one_gene_low_quality(pair_of_chromosomes):
+    #
+    #     if len(pair_of_chromosomes) != 2:
+    #         return
+    #
+    #     chromosome_1 = copy.deepcopy(pair_of_chromosomes[0])
+    #     chromosome_2 = copy.deepcopy(pair_of_chromosomes[1])
+    #
+    #     if random.randrange(1, 101) < Parameters.probability_of_crossing_genes:
+    #         key = random.choice(list(chromosome_1.paths_dict.keys()))
+    #         chromosome_1.paths_demand[key], chromosome_2.paths_demand[key] = \
+    #             chromosome_2.paths_demand[key], chromosome_1.paths_demand[key]
+    #         chromosome_1.transponders_used[key], chromosome_2.transponders_used[key] = \
+    #             chromosome_2.transponders_used[key], chromosome_1.transponders_used[key]
+    #
+    #     return [chromosome_1, chromosome_2]
+
     @staticmethod
-    def cross_chromosomes_one_gene_low_quality(pair_of_chromosomes):
-
-        if len(pair_of_chromosomes) != 2:
-            return
-
-        chromosome_1 = copy.deepcopy(pair_of_chromosomes[0])
-        chromosome_2 = copy.deepcopy(pair_of_chromosomes[1])
-
-        if random.randrange(1, 101) < Parameters.probability_of_crossing_genes:
-            key = random.choice(list(chromosome_1.paths_dict.keys()))
-            chromosome_1.paths_demand[key], chromosome_2.paths_demand[key] = \
-                chromosome_2.paths_demand[key], chromosome_1.paths_demand[key]
-            chromosome_1.transponders_used[key], chromosome_2.transponders_used[key] = \
-                chromosome_2.transponders_used[key], chromosome_1.transponders_used[key]
-
-        return [chromosome_1, chromosome_2]
-
-    @staticmethod
-    def cross_chromosomes2(pair_of_chromosomes, loci):
+    def cross_chromosomes_loci(pair_of_chromosomes, loci):
         """ from 0 to loci[0] not switch then loci[0] - loci[1] switch.. """
 
         loci = sorted(loci)
@@ -292,7 +296,7 @@ class ChromosomeUtils:
 
         return [chromosome_1, chromosome_2]
 
-    def mutate_chromosome(self, chromosome, pairs):  # chromosome, list of (node1_id, node2_id) -> mutated_chromosome
+    def mutate_chromosome(self, chromosome, pairs):  # chromosome, list of tuples(node1_id, node2_id) -> mutated_chromosome
         mutated_chromosome = chromosome
         for pair in pairs:
             mutated_chromosome.paths_demand[pair] = self.mutate_gene(mutated_chromosome.paths_demand[pair])
@@ -309,47 +313,47 @@ class ChromosomeUtils:
 
         return new_gene
 
-    @staticmethod
-    def generate_chromosome_all_in_one(network, size):
-        chromosome = Chromosome()
-        chromosome.set_paths_dict(network.paths_dict)
+    # @staticmethod
+    # def generate_chromosome_all_in_one(network, size):
+    #     chromosome = Chromosome()
+    #     chromosome.set_paths_dict(network.paths_dict)
+    #
+    #     for pair in sorted(network.demands_dict):
+    #         demand = network.demands_dict[pair]
+    #         chromosome.set_paths_demand(pair, DemandUtils.generate_random_demands_all_in_one(demand, size))
+    #
+    #     return chromosome
+    #
+    # @staticmethod
+    # def generate_chromosome_random(network):
+    #     chromosome = Chromosome()
+    #     chromosome.set_paths_dict(network.paths_dict)
+    #
+    #     for pair in sorted(network.demands_dict):
+    #         demand = network.demands_dict[pair]
+    #         chromosome.set_paths_demand(pair, DemandUtils.generate_random_demands(demand))
+    #
+    #     return chromosome
+    #
+    # @staticmethod
+    # def generate_chromosome_semi_random(network):
+    #     chromosome = Chromosome()
+    #     chromosome.set_paths_dict(network.paths_dict)
+    #     for pair in sorted(network.demands_dict):
+    #         demand = network.demands_dict[pair]
+    #         chromosome.set_paths_demand(pair, DemandUtils.generate_semi_random_demands(demand))
+    #
+    #     return chromosome
 
-        for pair in sorted(network.demands_dict):
-            demand = network.demands_dict[pair]
-            chromosome.set_paths_demand(pair, DemandUtils.generate_random_demands_all_in_one(demand, size))
-
-        return chromosome
-
-    @staticmethod
-    def generate_chromosome_random(network):
-        chromosome = Chromosome()
-        chromosome.set_paths_dict(network.paths_dict)
-
-        for pair in sorted(network.demands_dict):
-            demand = network.demands_dict[pair]
-            chromosome.set_paths_demand(pair, DemandUtils.generate_random_demands(demand))
-
-        return chromosome
-
-    @staticmethod
-    def generate_chromosome_semi_random(network):
-        chromosome = Chromosome()
-        chromosome.set_paths_dict(network.paths_dict)
-        for pair in sorted(network.demands_dict):
-            demand = network.demands_dict[pair]
-            chromosome.set_paths_demand(pair, DemandUtils.generate_semi_random_demands(demand))
-
-        return chromosome
-
-    @staticmethod
-    def generate_chromosome_usa(network):
-        chromosome = Chromosome()
-        chromosome.set_paths_dict(network.paths_dict)
-        for pair in sorted(network.demands_dict):
-            # demand = network.demands_dict[pair]
-            chromosome.set_paths_demand(pair, DemandUtils.generate_usa(170))
-
-        return chromosome
+    # @staticmethod
+    # def generate_chromosome_usa(network):
+    #     chromosome = Chromosome()
+    #     chromosome.set_paths_dict(network.paths_dict)
+    #     for pair in sorted(network.demands_dict):
+    #         # demand = network.demands_dict[pair]
+    #         chromosome.set_paths_demand(pair, DemandUtils.generate_usa(170))
+    #
+    #     return chromosome
 
     def generate_chromosome_usa_90(self, network):
         chromosome = Chromosome()
@@ -363,7 +367,7 @@ class ChromosomeUtils:
             chromosome.set_paths_demand(pair, demands)
             chromosome.set_transponders_used(pair, transponders)
         return chromosome
-
+    # uogólnić
     def generate_chromosome_pol_170(self, network):
         chromosome = Chromosome()
         chromosome.set_paths_dict(network.paths_dict)
@@ -380,6 +384,7 @@ class ChromosomeUtils:
 
 class DemandUtils:
 
+    # Zrobić n-elementowe
     @staticmethod
     def generate_random_demands(demand):  # creates 3-el list of demands
         demands = list()
@@ -398,18 +403,18 @@ class DemandUtils:
 
         return demands
 
-    @staticmethod
-    def generate_semi_random_demands(demand):
-        demands = list()
-        rand_number = random.randrange(0, demand)
-        semi_rand_number = rand_number - rand_number % 100
-        demands.append(semi_rand_number)
-        rand_number = random.randrange(0, demand - semi_rand_number)
-        semi_rand_number = rand_number - rand_number % 40
-        demands.append(semi_rand_number)
-        demands.append(int(demand - demands[0] - demands[1]))
-
-        return demands
+    # @staticmethod
+    # def generate_semi_random_demands(demand):
+    #     demands = list()
+    #     rand_number = random.randrange(0, demand)
+    #     semi_rand_number = rand_number - rand_number % 100
+    #     demands.append(semi_rand_number)
+    #     rand_number = random.randrange(0, demand - semi_rand_number)
+    #     semi_rand_number = rand_number - rand_number % 40
+    #     demands.append(semi_rand_number)
+    #     demands.append(int(demand - demands[0] - demands[1]))
+    #
+    #     return demands
 
     def generate_demands_and_transponders_config_all_in_one(self, demand, transponders_configuration, size):
         chosen_path = random.randrange(0, size)
@@ -424,56 +429,56 @@ class DemandUtils:
     def choose_transponders_configuration(transponders_configurations):
         return random.choice(transponders_configurations)
 
-    @staticmethod
-    def generate_usa(demand):
-        demands = list()
-        rand_number = random.randrange(0, demand)
-        semi_rand_number = rand_number - rand_number % 10
-        demands.append(semi_rand_number)
-        demands.append(int(demand - demands[0]))
-
-        return demands
+    # @staticmethod
+    # def generate_usa(demand):
+    #     demands = list()
+    #     rand_number = random.randrange(0, demand)
+    #     semi_rand_number = rand_number - rand_number % 10
+    #     demands.append(semi_rand_number)
+    #     demands.append(int(demand - demands[0]))
+    #
+    #     return demands
 
 
 class ChromosomeCreator:
 
-    def generate_chromosomes_random(self, network, number_of_chromosomes):
-        chromosomes = list()
-        for i in range(0, number_of_chromosomes):
-            chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
+    # def generate_chromosomes_random(self, network, number_of_chromosomes):
+    #     chromosomes = list()
+    #     for i in range(0, number_of_chromosomes):
+    #         chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
+    #
+    #     return chromosomes
+    #
+    # def generate_chromosomes_all_in_one(self, network, size, number_of_chromosomes):
+    #     chromosomes = list()
+    #     for i in range(0, number_of_chromosomes):
+    #         chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network, size))
+    #
+    #     return chromosomes
+    #
+    # def generate_chromosomes_mixed(self, network, number_of_chromosomes, ratio):
+    #     chromosomes = list()
+    #     for i in range(0, number_of_chromosomes):
+    #         if random.randrange(1, 101) > ratio:
+    #             chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
+    #         else:
+    #             chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
+    #
+    #     return chromosomes
 
-        return chromosomes
-
-    def generate_chromosomes_all_in_one(self, network, size, number_of_chromosomes):
-        chromosomes = list()
-        for i in range(0, number_of_chromosomes):
-            chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network, size))
-
-        return chromosomes
-
-    def generate_chromosomes_mixed(self, network, number_of_chromosomes, ratio):
-        chromosomes = list()
-        for i in range(0, number_of_chromosomes):
-            if random.randrange(1, 101) > ratio:
-                chromosomes.append(ChromosomeUtils.generate_chromosome_random(network))
-            else:
-                chromosomes.append(ChromosomeUtils.generate_chromosome_all_in_one(network))
-
-        return chromosomes
-
-    def generate_chromosomes_semi_random(self, network, number_of_chromosomes):
-        chromosomes = list()
-        for i in range(0, number_of_chromosomes):
-            chromosomes.append(ChromosomeUtils.generate_chromosome_semi_random(network))
-
-        return chromosomes
-
-    def generate_chromosomes_usa(self, network, number_of_chromosomes):
-        chromosomes = list()
-        for i in range(0, number_of_chromosomes):
-            chromosomes.append(ChromosomeUtils.generate_chromosome_usa(network))
-
-        return chromosomes
+    # def generate_chromosomes_semi_random(self, network, number_of_chromosomes):
+    #     chromosomes = list()
+    #     for i in range(0, number_of_chromosomes):
+    #         chromosomes.append(ChromosomeUtils.generate_chromosome_semi_random(network))
+    #
+    #     return chromosomes
+    #
+    # def generate_chromosomes_usa(self, network, number_of_chromosomes):
+    #     chromosomes = list()
+    #     for i in range(0, number_of_chromosomes):
+    #         chromosomes.append(ChromosomeUtils.generate_chromosome_usa(network))
+    #
+    #     return chromosomes
 
     def generate_chromosomes_usa_90(self, network, number_of_chromosomes):
         chromosomes = list()

@@ -3,9 +3,32 @@ import random
 
 import Parameters
 
+"""
+	Opis
+	Atributes:
+	Locals:
+	Returns:
+	Raises:
+"""
+
 
 class Network:
+	"""
+		Atributes:
+			name: name of network
+			nodes: list of Node objects
+			nodes_dict:
+	"""
 	def __init__(self, name='Unnamed Network'):
+		"""
+			Atributes:
+				name: name of network
+				nodes: list of nodes
+				nodes_dict: dictionary, key - node.name, value - index of node in nodes
+				links_dict: key - tuple(x, y): begin of edge, end of edge
+				demands_dict: key - tuple(x, y): begin of path, end of path
+				paths_dict: key - tuple(x, y): begin of path, end of path
+		"""
 		self.name = name
 		self.nodes = []
 		self.nodes_dict = {}    # node name -> id in nodes list
@@ -143,6 +166,9 @@ class Network:
 	#
 
 	def generate_all_paths_between(self, pair, max_amount_of_paths):
+		"""
+
+		"""
 		paths_created = 0
 		start, end = pair
 		queue = [(start, [start])]
@@ -223,6 +249,44 @@ class Network:
 			net.load_demands(filename, admissible_paths=admissible_paths)
 		return net
 
+	@staticmethod
+	def generate_network_with_admissible_paths(max_path_amount, file_path):
+		net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
+		visited = set()
+		for element in net.nodes_dict:
+			el_id = net.nodes_dict[element]
+			visited.add(element)
+			for vertex in set(net.nodes_dict) - visited:
+				v_id = net.nodes_dict[vertex]
+				pair = (el_id, v_id)
+				all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
+				admissible_paths = list()
+				admissible_paths.append(list(all_paths_between[0]))  # always add the shortest path
+				random_paths = random.sample(all_paths_between[1:], Parameters.Parameters.number_of_adm_paths_usa - 1)
+				for path in random_paths:
+					admissible_paths.append(list(path))
+				net.add_admissible_paths(admissible_paths)
+		return net
+
+	@staticmethod
+	def generate_network_with_admissible_paths2(max_path_amount, file_path):
+		net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
+		visited = set()
+		for element in net.nodes_dict:
+			el_id = net.nodes_dict[element]
+			visited.add(element)
+			for vertex in set(net.nodes_dict) - visited:
+				v_id = net.nodes_dict[vertex]
+				pair = (el_id, v_id)
+				all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
+				admissible_paths = list()
+				admissible_paths.append(list(all_paths_between[0]))  # always add the shortest path
+				random_paths = random.sample(all_paths_between[1:], 1)
+				for path in random_paths:
+					admissible_paths.append(list(path))
+				net.add_admissible_paths(admissible_paths)
+		return net
+
 
 class Node:
 	def __init__(self, name):
@@ -277,40 +341,3 @@ def example():
 		for neighbour in net.neighbours_of(start):
 			print(net.nodes[neighbour])
 
-
-def generate_network_with_admissible_paths(max_path_amount, file_path):
-	net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
-	visited = set()
-	for element in net.nodes_dict:
-		el_id = net.nodes_dict[element]
-		visited.add(element)
-		for vertex in set(net.nodes_dict) - visited:
-			v_id = net.nodes_dict[vertex]
-			pair = (el_id, v_id)
-			all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
-			admissible_paths = list()
-			admissible_paths.append(list(all_paths_between[0]))		# always add the shortest path
-			random_paths = random.sample(all_paths_between[1:], Parameters.Parameters.number_of_adm_paths_usa - 1)
-			for path in random_paths:
-				admissible_paths.append(list(path))
-			net.add_admissible_paths(admissible_paths)
-	return net
-
-
-def generate_network_with_admissible_paths2(max_path_amount, file_path):
-	net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
-	visited = set()
-	for element in net.nodes_dict:
-		el_id = net.nodes_dict[element]
-		visited.add(element)
-		for vertex in set(net.nodes_dict) - visited:
-			v_id = net.nodes_dict[vertex]
-			pair = (el_id, v_id)
-			all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
-			admissible_paths = list()
-			admissible_paths.append(list(all_paths_between[0]))		# always add the shortest path
-			random_paths = random.sample(all_paths_between[1:], 1)
-			for path in random_paths:
-				admissible_paths.append(list(path))
-			net.add_admissible_paths(admissible_paths)
-	return net

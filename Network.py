@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 import random
 
+import Parameters
+
 
 class Network:
 	def __init__(self, name='Unnamed Network'):
@@ -288,7 +290,7 @@ def generate_network_with_admissible_paths(max_path_amount, file_path):
 			all_paths_between = list(net.generate_all_paths_between(pair, max_path_amount))
 			admissible_paths = list()
 			admissible_paths.append(list(all_paths_between[0]))		# always add the shortest path
-			random_paths = random.sample(all_paths_between[1:], 2)
+			random_paths = random.sample(all_paths_between[1:], Parameters.Parameters.number_of_adm_paths_usa - 1)
 			for path in random_paths:
 				admissible_paths.append(list(path))
 			net.add_admissible_paths(admissible_paths)

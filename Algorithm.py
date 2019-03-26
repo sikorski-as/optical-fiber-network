@@ -24,7 +24,7 @@ class Algorithm:
     def pick_bests(self, chromosomes, fun, k, capacity):
         valued_chromosomes = list()
         for chromosome in chromosomes:
-            valued_chromosomes.append([chromosome, fun(chromosome, capacity)])
+            valued_chromosomes.append([chromosome, fun(chromosome)])
         valued_chromosomes.sort(key=lambda x: x[1])  # ???
         best_sorted_chromosomes = [best for best, _ in valued_chromosomes[:k]]
         return [chromosome for chromosome in self.chromosomes if chromosome in best_sorted_chromosomes]

@@ -176,8 +176,7 @@ def usa_90():
     print("Problem minimalizacji kosztu dla sieci amerykanskiej z 2 sieczkami predefiniowanymi i 90 demand na kazdym")
     print("Chromosomy: " + str(Parameters.amount_of_chromosomes_usa))
     print("Przepustowosc: " + str(OpticalFibersCapacity.L96.value))
-    network = Network.Network.generate_network_with_admissible_paths(Parameters.number_of_adm_paths_to_choose_from,
-                                                              'Resources/net-us.xml')
+    network = Network.Network.generate_network_with_admissible_paths('Resources/net-us.xml')
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
     chromosomes = chromosome_creator.generate_chromosomes_usa_90(network, Parameters.amount_of_chromosomes_usa)
@@ -218,7 +217,7 @@ def pol_170():
     print("Chromosomy: " + str(Parameters.amount_of_chromosomes_pol))
     print("Przepustowosc: " + str(OpticalFibersCapacity.L32.value))
 
-    network = Network.Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=Parameters.number_of_adm_paths_pol)
+    network = Network.Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=Parameters.number_of_admissible_paths)
     chromosome_creator = ChromosomeCreator()
     chromosome_utils = ChromosomeUtils()
     chromosomes = chromosome_creator.generate_chromosomes_pol_170(network, 20*Parameters.amount_of_chromosomes_pol)
@@ -244,13 +243,17 @@ def pol_170():
         print()
 
     t1, t2, t3 = 0, 0, 0
+
+    t4 = sum(t_amount[0] for t_amount in best_chromosome.transponders_used)
+
     for key in sorted(best_chromosome.paths_dict):
+
         for transponders in best_chromosome.transponders_used[key]:
             t1 += transponders[0]
             t2 += transponders[1]
             t3 += transponders[2]
     print("10:{} 40:{} 100:{}".format(t1*2, t2*2, t3*2))
-
+    print(t4)
     return algorithm.results, algorithm.time_elapsed, best_chromosome
 
 
@@ -266,7 +269,7 @@ def test():
 
 def konwertuj_klucze_do_stringa(dictionary):
     new_dict = dict()
-    for k, v in zip(dictionary.keys(), dictionary.values()):
+    for k, v in dictionary.items:
         new_dict[str(k)] = v
 
     return new_dict
@@ -348,7 +351,7 @@ def main():
 
 
 ###### generating data to files
-    data = usa_90()
+    data = pol_170()
     # wczytaj_chromosom_do_pliku(data[2], "chromosome")
 
 
@@ -377,3 +380,4 @@ def test_lib():
 
 if __name__ == '__main__':
     test_lib()
+    # main()

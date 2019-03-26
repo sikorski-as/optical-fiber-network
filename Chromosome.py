@@ -260,7 +260,7 @@ class ChromosomeUtils:
             # demand = network.demands_dict[pair]
             demands, transponders = demand_utils.generate_demands_and_transponders_config_all_in_one(90,
                                                                                                      ChromosomeUtils.transponders_90,
-                                                                                                     Parameters.number_of_adm_paths_usa)
+                                                                                                     Parameters.number_of_admissible_paths)
             chromosome.set_paths_demand(pair, demands)
             chromosome.set_transponders_used(pair, transponders)
         return chromosome
@@ -275,7 +275,7 @@ class ChromosomeUtils:
             # demand = network.demands_dict[pair]
             demands, transponders = demand_utils.generate_demands_and_transponders_config_all_in_one(170,
                                                                                                      ChromosomeUtils.transponders_170,
-                                                                                                     Parameters.number_of_adm_paths_pol)
+                                                                                                     Parameters.number_of_admissible_paths)
             chromosome.set_paths_demand(pair, demands)
             chromosome.set_transponders_used(pair, transponders)
         return chromosome

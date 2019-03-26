@@ -1,15 +1,14 @@
 import xml.etree.ElementTree as ET
-import random
-
+from typing import Tuple, List
 import Parameters
 
-"""
-	Opis
-	Atributes:
-	Locals:
-	Returns:
-	Raises:
-"""
+
+class Node:
+	def __init__(self, name):
+		self.name = name
+
+	def __str__(self):
+		return "({})".format(self.name)
 
 
 class Network:
@@ -29,7 +28,7 @@ class Network:
 				demands_dict: key - tuple(x, y): begin of path, end of path
 				paths_dict: key - tuple(x, y): begin of path, end of path
 		"""
-		self.name = name
+		self.name: str = name
 		self.nodes = []
 		self.nodes_dict = {}    # node name -> id in nodes list
 		self.links_dict = {}    # pair (node1_id, node2_id) -> True
@@ -40,11 +39,11 @@ class Network:
 	# NODES
 	#
 
-	def number_of_nodes(self):
+	def number_of_nodes(self) -> int:
 		""" Return  number of nodes. """
 		return len(self.nodes)
 
-	def add_node(self, node):
+	def add_node(self, node: Node) -> int:
 		""" Add node and return its id.  """
 		self.nodes.append(node)
 		node_id = len(self.nodes_dict)
@@ -59,23 +58,23 @@ class Network:
 	# LINKS
 	#
 
-	def number_of_links(self):
+	def number_of_links(self) -> int:
 		""" Return number of links. """
 		return len(self.links_dict)
 
-	def add_link(self, pair):
+	def add_link(self, pair: Tuple[int, int]):
 		""" Add link between nodes specified as a tuple of IDs. """
-		pair = tuple(pair)
+		pair = tuple(sorted(pair))
 		self.links_dict[pair] = True
 
-	def are_connected(self, pair):
+	def are_connected(self, pair: Tuple[int, int]) -> bool:
 		""" Return if there is a link between nodes specified as a tuple of IDs. """
 		pair = tuple(pair)
 		pair_inv = pair[::-1]
 		conn = (pair in self.links_dict) or (pair_inv in self.links_dict)
 		return conn
 
-	def neighbours_of(self, node_id):
+	def neighbours_of(self, node_id: int) -> List[int]:
 		""" Return a list of neighbours of a provided node. """
 		n_list = []
 		for id in self.nodes_range():
@@ -88,12 +87,12 @@ class Network:
 	# DEMANDS
 	#
 
-	def add_demand(self, pair, value=0.0):
+	def add_demand(self, pair: Tuple[int, int], value: float = 0.0):
 		""" Add demand between nodes specified as a tuple of IDs and set its value. """
-		pair = tuple(pair)
+		pair = tuple(sorted(pair))
 		self.demands_dict[pair] = value
 
-	def demand_of(self, pair):
+	def demand_of(self, pair: Tuple[int, int]) -> float:
 		"""
 		Return demanded value between nodes specified as a pair.
 		Raise an exception if there is not such demand.
@@ -111,11 +110,22 @@ class Network:
 	# ADMISSIBLE PATHS
 	#
 
-	def number_of_admissible_paths(self):
-		""" Return number of admissible paths. """
-		return len(self.paths_dict)
+	def number_of_admissible_paths(self, pair: Tuple[int, int] = None) -> int:
+		"""
+		Return number of admissible paths between two given nodes as a pair.
+		If there are no demands it returns 0.
 
-	def add_admissible_path(self, path):
+		Note: if pair is None, functon returns number of admissible paths for first key of self.paths_dict.
+		If number of admissible paths is different for each demand, calling this function with pair=None might lead
+		to an undefined behaviour!
+		"""
+		demand_tuples = list(self.paths_dict.keys())
+		key = demand_tuples[0] if len(demand_tuples) > 0 else 0
+		if pair is not None:
+			key = sorted(pair)
+		return len(self.paths_dict[key])
+
+	def add_admissible_path(self, path: List[int]):
 		"""
 		Add an admissible path provided as a list of node IDs.
 		Raise an exception if such path is invalid
@@ -133,7 +143,8 @@ class Network:
 
 		# verify path
 		for i in range(len(path) - 1):
-			if not self.are_connected(path[i:i+2]):
+			neighbours = (path[i], path[i+1])
+			if not self.are_connected(pair=neighbours):
 				raise Exception('Such path in the network is not possible.')
 
 		if pair not in self.paths_dict:
@@ -142,11 +153,11 @@ class Network:
 		else:
 			self.paths_dict[pair].append(path)
 
-	def add_admissible_paths(self, paths):
+	def add_admissible_paths(self, paths: List[List[int]]):
 		for path in paths:
 			self.add_admissible_path(path)
 
-	def paths_between(self, pair):
+	def paths_between(self, pair: Tuple[int, int]) -> List[List[int]]:
 		"""
 		Return list of paths between nodes specified as a pair of nodes.
 		Each path starts with a node specified as first element of the pair.
@@ -165,7 +176,7 @@ class Network:
 	# ANOTHER USEFUL FUNCS
 	#
 
-	def generate_all_paths_between(self, pair, amount_of_paths):
+	def generate_all_paths_between(self, pair: Tuple[int, int], amount_of_paths: int):
 		"""
 			Generating paths using BFS method.
 		"""
@@ -182,11 +193,12 @@ class Network:
 					queue.append((next, path + [next]))
 			if paths_created == amount_of_paths:
 				break
+
 	#
 	# LOADING FROM FILE
 	#
 
-	def load_structure(self, filename):
+	def load_structure(self, filename: str):
 		""" Load nodes and links from a specified *.xml file. """
 		tree = ET.parse(filename)
 		root = tree.getroot()
@@ -205,7 +217,7 @@ class Network:
 			connection = (self.nodes_dict[source], self.nodes_dict[target])
 			self.add_link(connection)
 
-	def load_demands(self, filename, admissible_paths=0):
+	def load_demands(self, filename: str, admissible_paths: int = 0):
 		"""
 		Load demands from a specified *.xml file.
 		Loads a specified number of admissible paths for each demand.
@@ -240,7 +252,7 @@ class Network:
 						self.add_admissible_path(nodes)
 
 	@staticmethod
-	def load_from_file(filename, structure=True, demands=True, admissible_paths=0):
+	def load_from_file(filename: str, structure: bool = True, demands: bool = True, admissible_paths: int = 0):
 		"""  Load structure structure, demands and admissible paths from a specified *.xml file. """
 		net = Network()
 		if structure:
@@ -250,7 +262,7 @@ class Network:
 		return net
 
 	@staticmethod
-	def generate_network_with_admissible_paths(file_path):
+	def generate_network_with_admissible_paths(file_path: str):
 		net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
 		visited = set()
 		for element in net.nodes_dict:
@@ -262,14 +274,6 @@ class Network:
 				admissible_paths = list(net.generate_all_paths_between(pair, Parameters.Parameters.number_of_admissible_paths))
 				net.add_admissible_paths(admissible_paths)
 		return net
-
-
-class Node:
-	def __init__(self, name):
-		self.name = name
-
-	def __str__(self):
-		return "({})".format(self.name)
 
 
 def example():

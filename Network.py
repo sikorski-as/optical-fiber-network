@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from typing import Tuple, List
+from itertools import combinations
 import Parameters
 
 
@@ -106,6 +107,16 @@ class Network:
 		else:
 			raise Exception("No demand between {} and {}.".format(*pair))
 
+	def generate_all_possible_demands(self, value: float):
+		"""
+		Generates all possible demands in the network with a given value.
+		Throws an exception if any demand is specified already.
+		"""
+		if len(self.demands_dict) > 0:
+			raise Exception("There are demands already!")
+		for pair in combinations(self.nodes_range(), r=2):
+			self.add_demand(pair, value)
+
 	#
 	# ADMISSIBLE PATHS
 	#
@@ -171,10 +182,6 @@ class Network:
 			return list(list(reversed(path)) for path in self.paths_dict[pair_inv])
 
 		raise Exception("No path between {} and {}".format(*pair))
-
-	#
-	# ANOTHER USEFUL FUNCS
-	#
 
 	def generate_all_paths_between(self, pair: Tuple[int, int], amount_of_paths: int):
 		"""

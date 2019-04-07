@@ -7,22 +7,22 @@ import timer
 import statistics
 
 
-def test():
-
-    network = Network.Network.load_from_file('Resources/net-pl.xml', structure=True, demands=True, admissible_paths=Parameters.Parameters.number_of_admissible_paths)
+def test(file_to_save):
+    data_collector = statistics.DataCollector()
+    network = Network.Network.generate_network_with_admissible_paths('Resources/nobel-germany.xml')
 
     stopwatch = timer.Timer()
 
-    pop_size = Parameters.Parameters.amount_of_chromosomes_pol
+    pop_size = Parameters.Parameters.amount_of_chromosomes_ger
     crt = creator.Creator(ChromosomeUtils.generate_chromosome_pol_170)
     chromosomes = crt.create(pop_size, network)
-    # chromosome = initial_pop[0]
-    # pprint(chromosome.__dict__)
+    # pprint(chromosomes[0].paths_demand)
+    # pprint(chromosomes[0].transponders_used)
+
     tools = toolkit.Toolkit()
     tools.set_fitness_weights(weights=(-1.0,))
     individuals = tools.create_individuals(chromosomes)
     tools.calculate_fitness_values(individuals, [ChromosomeUtils.get_network_transponders_configuration_cost])
-    # individual = individuals[0]
     best = tools.select_best(individuals, 1)
     iteration = 0
     pprint(f"{iteration}. {best}")
@@ -39,8 +39,9 @@ def test():
         best = tools.select_best(individuals, 1)
         iteration += 1
         pprint(f"{iteration}. time: {stopwatch.get_interval_of_time_from_start()} {best}")
+        data_collector.score.append(best.values[0])
+        data_collector.timestamp.append(stopwatch.get_interval_of_time_from_start())
 
-    best_chromosome = best.chromosome
+    pprint(best.chromosome)
+    data_collector.save_data(file_to_save)
 
-    print(statistics.get_amount_of_transponder_used(best_chromosome.transponders_used))
-    pprint(best_chromosome.transponders_used)

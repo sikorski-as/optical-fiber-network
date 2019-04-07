@@ -271,6 +271,8 @@ class Network:
 	@staticmethod
 	def generate_network_with_admissible_paths(file_path: str):
 		net = Network.load_from_file(file_path, structure=True, demands=True, admissible_paths=0)
+		net.demands_dict = {}
+		net.generate_all_possible_demands(170)
 		visited = set()
 		for element in net.nodes_dict:
 			el_id = net.nodes_dict[element]

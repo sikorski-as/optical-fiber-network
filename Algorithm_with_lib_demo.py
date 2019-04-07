@@ -18,6 +18,7 @@ def test(file_to_save):
     chromosomes = crt.create(pop_size, network)
     # pprint(chromosomes[0].paths_demand)
     # pprint(chromosomes[0].transponders_used)
+    # pprint(network.paths_dict)
 
     tools = toolkit.Toolkit()
     tools.set_fitness_weights(weights=(-1.0,))
@@ -38,7 +39,7 @@ def test(file_to_save):
         individuals = tools.select_best(individuals + offspring, pop_size)
         best = tools.select_best(individuals, 1)
         iteration += 1
-        pprint(f"{iteration}. time: {stopwatch.get_interval_of_time_from_start()} {best}")
+        pprint(f"{iteration}. time: {stopwatch.get_interval_of_time_from_start()} {best} ovf: {ChromosomeUtils.get_network_cost_transponders(best.chromosome)}")
         data_collector.score.append(best.values[0])
         data_collector.timestamp.append(stopwatch.get_interval_of_time_from_start())
 

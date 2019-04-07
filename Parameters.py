@@ -15,9 +15,10 @@ class Parameters:
     probability_of_crossing_genes = 70  # 0 - 100
     probability_of_mutation = 5
 
-    amount_of_chromosomes_usa = 300  # mi
-    amount_of_chromosomes_pol = 400  # mi
-    amount_of_chromosomes_ger = 500
+    demand = 170
+    # amount_of_chromosomes_usa = 300  # mi
+    # amount_of_chromosomes_pol = 400  # mi
+    amount_of_chromosomes_ger = 300
     # optical_fiber_capacity_usa = OpticalFibersCapacity.L96
     # optical_fiber_capacity_pol = OpticalFibersCapacity.L32
     optical_fiber_capacity = OpticalFibersCapacity.L48

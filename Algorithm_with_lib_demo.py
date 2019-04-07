@@ -30,7 +30,7 @@ def test(file_to_save):
 
     stopwatch.start()
     while stopwatch.get_interval_of_time_from_start() < Parameters.Parameters.amount_of_time:
-        couples = tools.create_couples(individuals, 2, int(pop_size / 2), select_function=toolkit.Toolkit.select_linear)
+        couples = tools.create_couples(individuals, 2, int(pop_size / 2), key=0, select_function=toolkit.Toolkit.select_linear)
         cr = crossover.Crossover(Parameters.Parameters.probability_of_crossing_genes)
         offspring = cr.cross(couples, ChromosomeUtils.cross_chromosomes)
         mut = mutation.Mutation(Parameters.Parameters.probability_of_mutation)

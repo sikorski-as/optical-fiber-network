@@ -226,8 +226,7 @@ class Toolkit:
 
         return chosen
 
-    @staticmethod
-    def create_couples(individuals: list, size: int, length: int, key: int=None, select_function=None, replacement: bool=False):
+    def create_couples(self, individuals: list, size: int, length: int, key: int=None, select_function=None, replacement: bool=False):
         """
             Creates list of tuples where one tuple is a 'couple'. If key is None then algorithm packs
             individuals in tuples in order they are stored in a list. If key is chosen then individuals are
@@ -254,10 +253,10 @@ class Toolkit:
         if key is None:
             couples = [tuple(individuals[begin:begin + size]) for begin in range(0, length * size, size)]
         elif replacement:
-            list_with_replacements = select_function(individuals, size * length, key=key, replacement=True)
+            list_with_replacements = select_function(self, individuals, size * length, key=key, replacement=True)
             couples = [tuple(list_with_replacements[begin:begin + size]) for begin in range(0, length * size, size)]
         else:
-            list_without_replacements = select_function(individuals, size * length, key=key)
+            list_without_replacements = select_function(self, individuals, size * length, key=key)
             couples = [tuple(list_without_replacements[begin:begin + size]) for begin in range(0, length * size, size)]
 
         return couples

@@ -18,7 +18,7 @@ class Parameters:
     demand = 170
     # amount_of_chromosomes_usa = 300  # mi
     # amount_of_chromosomes_pol = 400  # mi
-    amount_of_chromosomes_ger = 300
+    amount_of_chromosomes_ger = 400
     # optical_fiber_capacity_usa = OpticalFibersCapacity.L96
     # optical_fiber_capacity_pol = OpticalFibersCapacity.L32
     optical_fiber_capacity = OpticalFibersCapacity.L48
@@ -28,4 +28,4 @@ class Parameters:
     number_of_admissible_paths = 2
 
     amount_of_repetitions = 10
-    amount_of_time = 600
+    amount_of_time = 10000

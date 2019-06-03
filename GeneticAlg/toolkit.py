@@ -133,7 +133,7 @@ class Toolkit:
 
         return sorted(individuals, key=lambda x: x.values[key], reverse=should_reverse)[:k]
 
-    def select_roulette(self, individuals: list, k: int, key=0, replacement: bool=False):
+    def select_roulette(self, individuals: list, k: int, key=0, replacement: bool = False):
         """
             Picks k individuals using roulette method
             https://en.wikipedia.org/wiki/Fitness_proportionate_selection
@@ -158,7 +158,7 @@ class Toolkit:
 
         return numpy.random.choice(individuals, k, replace=replacement, p=probabilities).tolist()
 
-    def select_linear(self, individuals: list, k: int, key=0, replacement: bool=False):
+    def select_linear(self, individuals: list, k: int, key=0, replacement: bool = False):
         """
             Picks k individuals using linear rank selection
             It is possible that in a return list there will be duplications of individuals!
@@ -183,7 +183,7 @@ class Toolkit:
 
         return numpy.random.choice(sorted_individuals, k, replace=replacement, p=probabilities).tolist()
 
-    def select_tournament(self, individuals: list, k: int, n: int=2, key=0, replacement: bool=False):
+    def select_tournament(self, individuals: list, k: int, n: int = 2, key=0, replacement: bool = False):
         """
             Picks k individuals using tournament selection
             In each tournament the best individual is picked.
@@ -226,7 +226,8 @@ class Toolkit:
 
         return chosen
 
-    def create_couples(self, individuals: list, size: int, length: int, key: int=None, select_function=None, replacement: bool=False):
+    def create_couples(self, individuals: list, size: int, length: int, key: int = None, select_function=None,
+                       replacement: bool = False):
         """
             Creates list of tuples where one tuple is a 'couple'. If key is None then algorithm packs
             individuals in tuples in order they are stored in a list. If key is chosen then individuals are
@@ -273,5 +274,4 @@ class Individual:
 
     def __repr__(self):
         return "<{} {} {}>".format(self.chromosome, self.values[0], self.__hash__())
-        #return "<{}>".format(self.values[0])
-
+        # return "<{}>".format(self.values[0])

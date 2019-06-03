@@ -144,19 +144,31 @@ def wczytaj_z_pliku(name):
 
 
 def test_lib():
-    Algorithm_with_lib_demo.test("1.nobel-germany-2-48-170")
+    Algorithm_with_lib_demo.test("test")
 
 
 def wczytaj_dane():
-    with open("1.nobel-germany-2-48-170", 'rb') as file:
+    with open("1.nobel-germany-3-48-170", 'rb') as file:
         import pickle
         score = pickle.load(file)
         timestamp = pickle.load(file)
         print(f"{score} \n{timestamp}")
+    with open("germany_score_3_paths", 'w') as score_file:
+        score_file.write(str(score))
+    with open("germany_time_3_paths", 'w') as time_file:
+        time_file.write(str(timestamp))
 
-    PlotGenerator.show_plot(timestamp, score, 'r--')
+
+    PlotGenerator.show_plot(score[100::10], timestamp[100::10], 'r--')
+
+
+def test():
+    transponders_170 = [[i, j, k] for i in range(0, 2) for j in range(0, 3) for k in range(0, 3) if
+                        200 >= 10 * i + 40 * j + 100 * k >= 170]
+    print(transponders_170)
 
 
 if __name__ == '__main__':
-    test_lib()
-    # wczytaj_dane()
+    # test_lib()
+    wczytaj_dane()
+    # test()

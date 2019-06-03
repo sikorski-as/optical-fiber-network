@@ -43,6 +43,6 @@ def test(file_to_save):
         data_collector.score.append(best.values[0])
         data_collector.timestamp.append(stopwatch.get_interval_of_time_from_start())
 
-    pprint(best.chromosome)
+    pprint(best.chromosome.transponders_used)
     data_collector.save_data(file_to_save)
 
